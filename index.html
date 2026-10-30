@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>نيّر — NAIR · وكيلك المالي الذكي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ نيّر — design tokens: light against the desert night ============ */
+:root{
+  --bg:#0B1024; --bg2:#0F1734; --bg3:#15204A;
+  --card:rgba(255,255,255,.045); --card2:rgba(255,255,255,.07);
+  --line:rgba(255,206,130,.14); --line2:rgba(255,255,255,.08);
+  --text:#F3F5FC; --muted:#96A2C6; --faint:#5E6B92;
+  --light1:#FFD27A; --light2:#F59E2D; --light3:#C97B12;
+  --safe:#43D9AE; --safe-dim:rgba(67,217,174,.14);
+  --risk:#F2545B; --risk-dim:rgba(242,84,91,.13);
+  --warn:#FFA245; --warn-dim:rgba(255,162,69,.13);
+  --alinma:#C9A24B;
+  --r:18px; --r-sm:13px;
+  --disp:'Alexandria',sans-serif; --body:'IBM Plex Sans Arabic',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:var(--body);background:#06091A;color:var(--text);
+  display:flex;align-items:center;justify-content:center;min-height:100dvh;
+  background-image:radial-gradient(900px 500px at 80% -10%,rgba(245,158,45,.10),transparent 60%),
+                   radial-gradient(700px 500px at 10% 110%,rgba(67,217,174,.06),transparent 60%);
+}
+#phone{
+  position:relative;width:min(430px,100vw);height:min(932px,100dvh);
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 70%,#0C1330 100%);
+  overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);
+}
+@media(min-width:480px){#phone{border-radius:34px;height:min(900px,94dvh)}}
+/* ambient light field */
+#phone::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(420px 260px at 50% -8%,rgba(255,210,122,.13),transparent 65%);}
+/* ============ app bar ============ */
+#appbar{position:relative;z-index:5;display:flex;align-items:center;gap:10px;padding:14px 18px 10px;}
+#appbar .orb-mini{width:34px;height:34px;flex:none}
+#appbar h1{font:600 16px/1 var(--disp);letter-spacing:.2px}
+#appbar .sub{font-size:11px;color:var(--muted);margin-top:3px}
+#appbar .spacer{flex:1}
+.score-chip{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);
+  border-radius:99px;padding:6px 11px;font:600 12px var(--disp);cursor:pointer}
+.score-chip .dot{width:7px;height:7px;border-radius:50%}
+.sandbox-tag{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:9;
+  font-size:9px;letter-spacing:1px;color:#0B1024;background:linear-gradient(90deg,var(--light1),var(--light2));
+  padding:2px 12px;border-radius:0 0 8px 8px;font-weight:700}
+/* ============ screens ============ */
+#screen-root{position:relative;z-index:2;flex:1;overflow-y:auto;overflow-x:hidden;padding:0 18px 110px;scrollbar-width:none}
+#screen-root::-webkit-scrollbar{display:none}
+.view{animation:fadeUp .35s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+h2.vt{font:700 22px/1.3 var(--disp);margin:14px 0 4px}
+p.vs{color:var(--muted);font-size:13px;line-height:1.8;margin-bottom:14px}
+.section-t{display:flex;align-items:center;justify-content:space-between;margin:20px 0 10px}
+.section-t b{font:600 14px var(--disp)}
+.section-t a{font-size:12px;color:var(--light1);cursor:pointer;text-decoration:none}
+/* ============ cards ============ */
+.card{background:var(--card);border:1px solid var(--line2);border-radius:var(--r);padding:16px;margin-bottom:12px;position:relative}
+.card.glow{border-color:var(--line);box-shadow:0 0 40px rgba(245,158,45,.07) inset}
+.card.risk{border-color:rgba(242,84,91,.35);background:linear-gradient(180deg,var(--risk-dim),var(--card))}
+.card.safe{border-color:rgba(67,217,174,.3);background:linear-gradient(180deg,var(--safe-dim),var(--card))}
+.row{display:flex;align-items:center;gap:12px}
+.row .grow{flex:1;min-width:0}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--line2)}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--muted)} .kv b{font-family:var(--disp)}
+.num{font-family:var(--disp);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:embed}
+.tag{display:inline-block;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;border:1px solid}
+.tag.r{color:var(--risk);border-color:rgba(242,84,91,.4);background:var(--risk-dim)}
+.tag.w{color:var(--warn);border-color:rgba(255,162,69,.4);background:var(--warn-dim)}
+.tag.s{color:var(--safe);border-color:rgba(67,217,174,.4);background:var(--safe-dim)}
+.tag.g{color:var(--light1);border-color:var(--line);background:rgba(255,210,122,.08)}
+.why{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--light1);cursor:pointer;border:none;background:none;font-family:var(--body)}
+.why::before{content:'؟';display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1px solid var(--light3);font-size:10px}
+/* ============ buttons ============ */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:none;cursor:pointer;
+  font:600 14px var(--disp);border-radius:14px;padding:15px;transition:.18s;color:#241500;
+  background:linear-gradient(135deg,var(--light1),var(--light2));box-shadow:0 6px 24px rgba(245,158,45,.25)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--card2);color:var(--text);border:1px solid var(--line2);box-shadow:none}
+.btn.danger{background:var(--risk-dim);color:var(--risk);border:1px solid rgba(242,84,91,.4);box-shadow:none}
+.btn.safe{background:linear-gradient(135deg,#52E6BC,#1FA982);color:#03241A}
+.btn.sm{padding:10px 14px;font-size:12.5px;width:auto;border-radius:11px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btnrow{display:flex;gap:10px;margin-top:12px}
+.btnrow .btn{flex:1}
+/* ============ the NAIR orb (signature) ============ */
+.orb{position:relative;border-radius:50%;flex:none}
+.orb .core{position:absolute;inset:18%;border-radius:50%;
+  background:radial-gradient(circle at 38% 32%,#FFF3D6 0%,var(--light1) 32%,var(--light2) 62%,var(--light3) 100%);
+  box-shadow:0 0 26px rgba(245,158,45,.55),0 0 70px rgba(245,158,45,.22);
+  animation:breath 3.4s ease-in-out infinite}
+.orb .ring{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(255,210,122,.35);animation:ringPulse 3.4s ease-in-out infinite}
+.orb .ring.r2{inset:-14%;border-color:rgba(255,210,122,.14);animation-delay:.5s}
+.orb .sweep{display:none;position:absolute;inset:-8%;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 78%,rgba(255,230,170,.85) 92%,transparent 100%);
+  animation:spin 1.3s linear infinite;-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%)}
+.orb[data-state="scanning"] .sweep{display:block}
+.orb[data-state="scanning"] .core{animation-duration:1.2s}
+.orb[data-state="alert"] .core{background:radial-gradient(circle at 38% 32%,#FFE2D6,#FF9A7A 35%,var(--risk) 70%,#8E1F2C);box-shadow:0 0 26px rgba(242,84,91,.6);animation-duration:1.1s}
+.orb[data-state="alert"] .ring{border-color:rgba(242,84,91,.5);animation-duration:1.1s}
+.orb[data-state="protect"] .core{background:radial-gradient(circle at 38% 32%,#DFFFF4,#7BEACB 35%,var(--safe) 70%,#0E7A5C);box-shadow:0 0 26px rgba(67,217,174,.55)}
+.orb[data-state="protect"] .ring{border-color:rgba(67,217,174,.5)}
+@keyframes breath{0%,100%{transform:scale(.94);filter:brightness(.95)}50%{transform:scale(1.04);filter:brightness(1.12)}}
+@keyframes ringPulse{0%,100%{transform:scale(.96);opacity:.7}50%{transform:scale(1.06);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.orb .core,.orb .ring,.orb .sweep{animation:none!important}}
+/* ============ tab bar ============ */
+#tabbar{position:absolute;bottom:0;left:0;right:0;z-index:8;display:flex;align-items:flex-end;justify-content:space-around;
+  padding:10px 8px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(11,16,36,0),rgba(8,12,28,.92) 30%,#080C1C);backdrop-filter:blur(14px)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;color:var(--faint);cursor:pointer;border:none;background:none;font-family:var(--body);min-width:58px;padding:4px 0}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7}
+.tab.on{color:var(--light1)}
+.tab.center{margin-top:-26px}
+.tab.center .orb{width:52px;height:52px}
+/* ============ lists ============ */
+.litem{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line2);cursor:pointer}
+.litem:last-child{border-bottom:0}
+.licon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font:700 13px var(--disp);flex:none}
+.litem .t{font-size:13.5px;font-weight:600}
+.litem .d{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.6}
+.litem .amt{text-align:left;font:600 13.5px var(--disp);white-space:nowrap}
+.litem .amt small{display:block;font:400 10.5px var(--body);color:var(--muted);margin-top:3px}
+.bar{height:7px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--light1),var(--light2))}
+.bar i.s{background:linear-gradient(90deg,#7BEACB,var(--safe))}
+.bar i.r{background:linear-gradient(90deg,#FF8A92,var(--risk))}
+/* ============ chat ============ */
+.chatwrap{display:flex;flex-direction:column;gap:12px;padding-bottom:8px}
+.msg{max-width:86%;padding:12px 15px;border-radius:16px;font-size:13.5px;line-height:1.9;animation:fadeUp .3s ease both}
+.msg.user{align-self:flex-start;background:linear-gradient(135deg,rgba(255,210,122,.16),rgba(245,158,45,.10));border:1px solid var(--line);border-bottom-left-radius:5px}
+.msg.agent{align-self:flex-end;background:var(--card2);border:1px solid var(--line2);border-bottom-right-radius:5px}
+.msg .mini-kv{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:5px 0;border-bottom:1px dashed var(--line2)}
+.msg .mini-kv:last-child{border-bottom:0}
+.msg .mini-kv span{color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px}
+.chip{font-size:12px;padding:8px 13px;border-radius:99px;border:1px solid var(--line);background:rgba(255,210,122,.06);color:var(--light1);cursor:pointer;font-family:var(--body)}
+#chatbar{display:flex;gap:8px;position:sticky;bottom:0;padding:10px 0 4px;background:linear-gradient(180deg,transparent,var(--bg2) 35%)}
+#chatbar input{flex:1;background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:13px 15px;color:var(--text);font:400 13.5px var(--body);outline:none}
+#chatbar input:focus{border-color:var(--line)}
+#chatbar .send{width:48px;height:48px;flex:none;border-radius:14px;border:none;background:linear-gradient(135deg,var(--light1),var(--light2));font-size:18px;cursor:pointer;color:#241500}
+.typing{display:inline-flex;gap:4px;padding:4px 0}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--light1);animation:tp 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tp{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+/* ============ proposal card ============ */
+.proposal{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:6px 0}
+.proposal .ph{display:flex;align-items:center;gap:10px;padding:13px 15px;background:linear-gradient(90deg,rgba(255,210,122,.12),transparent)}
+.proposal .ph b{font:600 13.5px var(--disp)}
+.proposal .pb{padding:6px 15px 14px}
+.proposal.done{opacity:.75}
+.proposal .status{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:99px}
+/* ============ toggles & sheets & toast ============ */
+.tgl{position:relative;width:46px;height:26px;flex:none;cursor:pointer}
+.tgl input{display:none}
+.tgl i{position:absolute;inset:0;border-radius:99px;background:rgba(255,255,255,.12);transition:.2s}
+.tgl i::after{content:'';position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+.tgl input:checked+i{background:linear-gradient(90deg,var(--light1),var(--light2))}
+.tgl input:checked+i::after{transform:translateX(-20px)}
+#sheet-root{position:absolute;inset:0;z-index:40;display:none;align-items:flex-end}
+#sheet-root.open{display:flex}
+#sheet-root .veil{position:absolute;inset:0;background:rgba(4,7,18,.66);backdrop-filter:blur(3px)}
+.sheet{position:relative;width:100%;max-height:82%;overflow-y:auto;background:linear-gradient(180deg,#161F44,#0F1734);
+  border-radius:26px 26px 0 0;border-top:1px solid var(--line);padding:14px 20px 30px;animation:sheetUp .3s ease both;scrollbar-width:none}
+@keyframes sheetUp{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+.sheet .grab{width:42px;height:4px;border-radius:99px;background:rgba(255,255,255,.2);margin:0 auto 14px}
+#toast{position:absolute;top:46px;left:50%;transform:translateX(-50%) translateY(-80px);z-index:60;
+  background:#1A2450;border:1px solid var(--line);border-radius:13px;padding:11px 18px;font-size:12.5px;font-weight:600;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);transition:.35s;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+#toast.show{transform:translateX(-50%) translateY(0)}
+/* ============ scan ============ */
+.scanlog{font-size:12px;color:var(--muted);line-height:2.2;min-height:170px}
+.scanlog div{display:flex;gap:8px;align-items:baseline;animation:fadeUp .3s ease both}
+.scanlog .ok{color:var(--safe)} .scanlog .hl{color:var(--light1)}
+/* ============ score ring ============ */
+.ringwrap{position:relative;width:168px;height:168px;margin:6px auto}
+.ringwrap svg{transform:rotate(-90deg)}
+.ringwrap .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ringwrap .mid b{font:800 40px/1 var(--disp)}
+.ringwrap .mid span{font-size:11px;color:var(--muted);margin-top:5px}
+/* ============ demo mode ============ */
+#demo-fab{position:absolute;bottom:106px;left:14px;z-index:30;display:flex;align-items:center;gap:7px;border:1px solid var(--line);
+  background:rgba(20,28,62,.92);backdrop-filter:blur(8px);color:var(--light1);font:600 11.5px var(--body);padding:10px 14px;border-radius:99px;cursor:pointer;box-shadow:0 8px 26px rgba(0,0,0,.45)}
+#demo-overlay{position:absolute;left:0;right:0;bottom:0;z-index:50;display:none;padding:14px;}
+#demo-overlay.open{display:block}
+#demo-overlay .panel{background:linear-gradient(135deg,#1B2658,#121A3E);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 18px 50px rgba(0,0,0,.6);animation:sheetUp .3s ease both}
+#demo-overlay .steps{font-size:10.5px;color:var(--light1);font-weight:700;letter-spacing:.5px}
+#demo-overlay h4{font:700 15px var(--disp);margin:7px 0 5px}
+#demo-overlay p{font-size:12px;color:var(--muted);line-height:1.9}
+.consent-scope{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px dashed var(--line2)}
+.consent-scope:last-child{border:0}
+.consent-scope .ic{width:34px;height:34px;border-radius:11px;background:rgba(255,210,122,.1);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+.alinma-mark{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#2A2210,#171205);border:1px solid rgba(201,162,75,.45);display:flex;align-items:center;justify-content:center;flex:none}
+.tl{position:relative;padding-right:20px}
+.tl::before{content:'';position:absolute;right:5px;top:8px;bottom:8px;width:1.5px;background:linear-gradient(180deg,var(--line),transparent)}
+.tlitem{position:relative;padding:9px 14px 9px 0;font-size:12.5px}
+.tlitem::before{content:'';position:absolute;right:-18px;top:15px;width:9px;height:9px;border-radius:50%;background:var(--light2);box-shadow:0 0 10px rgba(245,158,45,.6)}
+.tlitem.user::before{background:var(--safe);box-shadow:0 0 10px rgba(67,217,174,.6)}
+.tlitem.risk::before{background:var(--risk);box-shadow:0 0 10px rgba(242,84,91,.6)}
+.tlitem .tm{font-size:10px;color:var(--faint);margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--card);border:1px solid var(--line2);border-radius:var(--r-sm);padding:13px}
+.stat b{display:block;font:700 18px var(--disp);margin-top:4px}
+.stat span{font-size:11px;color:var(--muted)}
+.legend{display:flex;gap:14px;font-size:10.5px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-left:5px;vertical-align:-1px}
+input.fld,select.fld{width:100%;background:var(--card2);border:1px solid var(--line2);border-radius:13px;padding:13px 15px;color:var(--text);font:400 13.5px var(--body);outline:none;margin-bottom:10px}
+select.fld option{background:#141C3E}
+.seg{display:flex;background:var(--card);border:1px solid var(--line2);border-radius:13px;padding:4px;margin-bottom:12px}
+.seg button{flex:1;border:none;background:none;color:var(--muted);font:600 12px var(--body);padding:9px;border-radius:10px;cursor:pointer}
+.seg button.on{background:rgba(255,210,122,.14);color:var(--light1)}
+.focus-visible :focus-visible,button:focus-visible,.tab:focus-visible{outline:2px solid var(--light1);outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="phone">
+  <div class="sandbox-tag">بيانات تجريبية · SANDBOX</div>
+  <header id="appbar" hidden></header>
+  <main id="screen-root"></main>
+  <nav id="tabbar" hidden></nav>
+  <button id="demo-fab" hidden>▶ وضع العرض</button>
+  <div id="demo-overlay"></div>
+  <div id="sheet-root"></div>
+  <div id="toast"></div>
+</div>
+<script>
+'use strict';
+/* =====================================================================
+   نيّر — NAIR · MVP architecture
+   Layers: DemoDataGenerator → MockAlinmaOpenBankingAPI → OpenBankingAdapter
+           TransactionClassifier → ObligationDetector → CashflowForecaster
+           HealthScoreEngine → ScenarioSimulator → AgentDecisionEngine
+           PermissionManager → ActivityLogger → Views/Router → DemoMode
+   ===================================================================== */
+const SAR='ر.س';
+const DAY=864e5;
+const AR_M=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const TODAY=(()=>{const d=new Date();d.setHours(0,0,0,0);return d})();
+const addD=(d,n)=>new Date(d.getTime()+n*DAY);
+const dstr=d=>`${d.getDate()} ${AR_M[d.getMonth()]}`;
+const daysTo=d=>Math.round((d-TODAY)/DAY);
+const fmt=(n,dec)=>{const v=Math.abs(n);const s=v.toLocaleString('en-US',{minimumFractionDigits:dec??0,maximumFractionDigits:dec??(v%1?2:0)});return (n<0?'−':'')+s};
+const money=(n,dec)=>`<span class="num">${fmt(n,dec)}</span> ${SAR}`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ================= Demo dataset definitions (synthetic, labeled sandbox) ================= */
+const SALARY={amount:14500,dom:27,src:'إيداع راتب — شركة نماء الوطنية'};
+const PLAN_DEFS=[
+ {id:'tamara1',provider:'تمارا',merchant:'تمارا Tamara',item:'iPhone 15 Pro — مكتبة جرير',total:4800,monthly:1200,count:4,dom:18,startMonthsAgo:2,type:'bnpl',clr:'#7C5CFF'},
+ {id:'tabby1',provider:'تابي',merchant:'تابي Tabby',item:'سماعة ومكتب — إكسترا',total:2400,monthly:600,count:4,dom:21,startMonthsAgo:1,type:'bnpl',clr:'#3ECF8E'},
+ {id:'madfu1',provider:'مدفوع',merchant:'مدفوع Madfu',item:'تذاكر طيران — طيران ناس',total:1800,monthly:600,count:3,dom:2,startMonthsAgo:1,type:'bnpl',clr:'#4FA8FF'},
+ {id:'alinma1',provider:'مصرف الإنماء',merchant:'قسط تمويل الإنماء',item:'تمويل سيارة — مرابحة',total:66600,monthly:1850,count:36,dom:28,startMonthsAgo:18,type:'installment',clr:'#C9A24B'},
+];
+const SUB_DEFS=[
+ {id:'netflix',name:'نتفلكس',amount:45,dom:15,cat:'ترفيه'},
+ {id:'spotify',name:'سبوتيفاي',amount:21.99,dom:5,cat:'ترفيه'},
+ {id:'icloud',name:'iCloud+',amount:14.99,dom:8,cat:'خدمات رقمية'},
+ {id:'gym',name:'نادي وقت اللياقة',amount:199,dom:16,cat:'لياقة'},
+ {id:'stc',name:'فاتورة STC',amount:230,dom:20,cat:'اتصالات'},
+ {id:'youtube',name:'يوتيوب بريميوم',amount:23.99,dom:10,cat:'ترفيه'},
+];
+const MERCHANTS={
+ delivery:['هنقرستيشن','جاهز','مرسول','كيتا Keeta'],
+ coffee:['بارنز','d.CAFE دكتور كيف','هاف مليون','كيان كافيه'],
+ groceries:['بنده','أسواق التميمي','الدانوب'],
+ transport:['أوبر','محطة الدريس — وقود','ساسكو — وقود','كريم'],
+ shopping:['مكتبة جرير','إكسترا','نمشي','شي إن SHEIN','العثيم مول'],
+ health:['صيدلية النهدي','صيدلية الدواء'],
+};
+const CAT_AR={delivery:'توصيل طعام',coffee:'قهوة',groceries:'تموينات',transport:'مواصلات ووقود',shopping:'تسوق',health:'صحة',bnpl:'دفعات آجلة (BNPL)',installment:'أقساط بنكية',subscription:'اشتراكات',salary:'راتب',savings:'ادخار',other:'أخرى'};
+
+/* ================= DemoDataGenerator ================= */
+const DemoDataGenerator={
+ occurrences(def){ // monthly occurrence dates for a plan
+   const start=new Date(TODAY.getFullYear(),TODAY.getMonth()-def.startMonthsAgo,def.dom);
+   const out=[];for(let k=0;k<def.count;k++)out.push(new Date(start.getFullYear(),start.getMonth()+k,def.dom));return out;
+ },
+ subOccurrences(def,fromD){ const out=[];let d=new Date(fromD.getFullYear(),fromD.getMonth(),def.dom);
+   while(d<=addD(TODAY,40)){out.push(new Date(d));d=new Date(d.getFullYear(),d.getMonth()+1,def.dom);}return out;
+ },
+ generate(){
+  const rng=mulberry32(7);const txs=[];let id=1;
+  const from=addD(TODAY,-75);
+  const push=(date,merchant,amount,hint)=>{if(date>TODAY||date<from)return;txs.push({id:'tx'+(id++),date,merchant,amount,hint})};
+  // salary + savings
+  let d=new Date(from.getFullYear(),from.getMonth(),SALARY.dom);
+  while(d<=TODAY){push(d,SALARY.src,SALARY.amount,'salary');push(addD(d,1),'تحويل إلى حساب الادخار — الإنماء',-300,'savings');d=new Date(d.getFullYear(),d.getMonth()+1,SALARY.dom);}
+  // plans
+  PLAN_DEFS.forEach(p=>this.occurrences(p).forEach(o=>push(o,p.merchant+' — قسط',-p.monthly,p.type)));
+  // subscriptions
+  SUB_DEFS.forEach(s=>this.subOccurrences(s,from).forEach(o=>push(o,s.name+' — اشتراك',-s.amount,'subscription')));
+  // dailies
+  for(let i=0;i<=75;i++){const day=addD(from,i);if(day>TODAY)break;
+    if(rng()<.68)push(day,MERCHANTS.coffee[Math.floor(rng()*4)],-(12+Math.round(rng()*16)),'coffee');
+    if(rng()<.55)push(day,MERCHANTS.delivery[Math.floor(rng()*4)],-(34+Math.round(rng()*42)),'delivery');
+    if(i%5===2)push(day,MERCHANTS.groceries[Math.floor(rng()*3)],-(90+Math.round(rng()*120)),'groceries');
+    if(i%4===1)push(day,MERCHANTS.transport[Math.floor(rng()*4)],-(25+Math.round(rng()*90)),'transport');
+    if(i%8===4)push(day,MERCHANTS.shopping[Math.floor(rng()*5)],-(70+Math.round(rng()*260)),'shopping');
+    if(i%17===9)push(day,MERCHANTS.health[Math.floor(rng()*2)],-(30+Math.round(rng()*90)),'health');
+  }
+  push(addD(TODAY,-19),'مستشفى دلة — طوارئ',-480,'health');
+  txs.sort((a,b)=>b.date-a.date);
+  return txs;
+ }
+};
+
+/* ================= MockAlinmaOpenBankingAPI (KSA OBF-shaped: AIS + PIS) ================= */
+const MockAlinmaOpenBankingAPI={
+ _consent:null,_lat:ms=>new Promise(r=>setTimeout(r,ms)),
+ async createAccountAccessConsent(scopes){
+   await this._lat(650);
+   this._consent={ConsentId:'OB-ALINMA-'+Math.random().toString(36).slice(2,8).toUpperCase(),
+     Status:'AwaitingAuthorisation',Permissions:scopes,
+     CreationDateTime:new Date().toISOString(),ExpirationDateTime:addD(TODAY,90).toISOString()};
+   return {...this._consent};
+ },
+ async authoriseConsent(){await this._lat(900);if(!this._consent)throw{ErrorCode:'AUTH.NO_CONSENT'};this._consent.Status='Authorised';return {...this._consent}},
+ _guard(){const c=this._consent;
+   if(!c||c.Status==='Revoked')throw{httpCode:403,ErrorCode:'AUTH.CONSENT_REVOKED',Message:'تم إلغاء الموافقة — أعد ربط الحساب'};
+   if(c.Status==='Expired'||new Date(c.ExpirationDateTime)<new Date())throw{httpCode:403,ErrorCode:'AUTH.CONSENT_EXPIRED',Message:'انتهت صلاحية الموافقة — جدّدها للمتابعة'};
+ },
+ async getAccounts(){await this._lat(420);this._guard();
+   return [{accountId:'acc-001',bank:'alinma',nickname:'الحساب الجاري — الإنماء',iban_masked:'SA44 •••• •••• 9012',type:'Current',currency:'SAR'}]},
+ async getBalances(){await this._lat(380);this._guard();
+   return [{accountId:'acc-001',amount:3950,type:'InterimAvailable',currency:'SAR',dateTime:new Date().toISOString()}]},
+ async getTransactions(){await this._lat(1100);this._guard();return DemoDataGenerator.generate()},
+ async createPaymentConsent(p){await this._lat(500);this._guard();return {PaymentConsentId:'PC-'+Date.now(),Status:'Authorised',...p}},
+ async executePayment(pc){await this._lat(700);this._guard();return {PaymentId:'PMT-'+Date.now(),Status:'AcceptedSettlementCompleted',...pc}},
+ async revokeConsent(){await this._lat(350);if(this._consent)this._consent.Status='Revoked';return {...this._consent}},
+ simulateExpiry(){if(this._consent)this._consent.Status='Expired'},
+ async renew(){await this._lat(600);this._consent.Status='Authorised';this._consent.ExpirationDateTime=addD(TODAY,90).toISOString();return {...this._consent}},
+ status(){return this._consent?{...this._consent}:null}
+};
+/* Adapter: the only door the UI uses. Swap Mock→real Alinma FAPI client with zero UI changes. */
+const OpenBankingAdapter={
+ api:MockAlinmaOpenBankingAPI,
+ connect:s=>OpenBankingAdapter.api.createAccountAccessConsent(s),
+ authorise:()=>OpenBankingAdapter.api.authoriseConsent(),
+ accounts:()=>OpenBankingAdapter.api.getAccounts(),
+ balances:()=>OpenBankingAdapter.api.getBalances(),
+ transactions:()=>OpenBankingAdapter.api.getTransactions(),
+ reserveFunds:(amt,reason)=>OpenBankingAdapter.api.createPaymentConsent({amount:amt,reason,type:'InternalReserve'}).then(pc=>OpenBankingAdapter.api.executePayment(pc)),
+ revoke:()=>OpenBankingAdapter.api.revokeConsent(),
+ renew:()=>OpenBankingAdapter.api.renew(),
+ consent:()=>OpenBankingAdapter.api.status(),
+ simulateExpiry:()=>OpenBankingAdapter.api.simulateExpiry()
+};
+
+/* ================= TransactionClassifier ================= */
+const TransactionClassifier={
+ classify(tx){
+  const m=tx.merchant;
+  const has=k=>m.includes(k);
+  let category='other',flags={},reason='';
+  if(tx.amount>0&&has('راتب')){category='salary';flags.salary=true;reason='إيداع كبير متكرر شهريًا بنفس المبلغ يوم '+SALARY.dom+' — نمط راتب';}
+  else if(has('تمارا')||has('تابي')||has('مدفوع Madfu')){category='bnpl';flags.bnpl=true;reason='تاجر دفعات آجلة معروف + دفعات متساوية بإيقاع شهري — خطة BNPL';}
+  else if(has('قسط تمويل')){category='installment';flags.installment=true;reason='وصف "قسط تمويل" + مبلغ ثابت شهريًا — قسط بنكي (مرابحة)';}
+  else if(has('اشتراك')){category='subscription';flags.subscription=true;reason='نفس التاجر ونفس المبلغ كل ~30 يوم — اشتراك متكرر';}
+  else if(has('الادخار')){category='savings';flags.savings=true;reason='تحويل دوري لحساب الادخار';}
+  else if(MERCHANTS.delivery.some(has)){category='delivery';reason='تطبيق توصيل طعام معروف';}
+  else if(MERCHANTS.coffee.some(has)){category='coffee';reason='سلسلة قهوة معروفة';}
+  else if(MERCHANTS.groceries.some(has)){category='groceries';reason='سوبرماركت معروف';}
+  else if(MERCHANTS.transport.some(has)){category='transport';reason='مواصلات أو محطة وقود';}
+  else if(MERCHANTS.shopping.some(has)){category='shopping';reason='متجر تسوق معروف';}
+  else if(MERCHANTS.health.some(has)||has('مستشفى')){category='health';reason='منشأة صحية/صيدلية';}
+  return {...tx,category,flags,classifierReason:reason||'تصنيف افتراضي'};
+ },
+ run(txs){return txs.map(t=>this.classify(t))}
+};
+
+/* ================= ObligationDetector ================= */
+const ObligationDetector={
+ detect(txs){
+  const plans=PLAN_DEFS.map(p=>{
+    const occ=DemoDataGenerator.occurrences(p);
+    const paid=occ.filter(o=>o<=TODAY).length;
+    const next=occ.find(o=>o>TODAY)||null;
+    const paidAmt=paid*p.monthly, remaining=p.total-paidAmt;
+    return {...p,occ,paidCount:paid,paidAmt,remaining,nextDue:next,
+      estimated:p.type==='bnpl',
+      detectionReason:p.type==='bnpl'
+        ?`رصدنا ${paid} دفعة متساوية (${fmt(p.monthly)} ${SAR}) لتاجر ${p.provider} بإيقاع شهري يوم ${p.dom} — الإجمالي تقدير من نمط «ادفع على 4».`
+        :`خصم ثابت ${fmt(p.monthly)} ${SAR} شهريًا بوصف "قسط تمويل" من مصرف الإنماء يوم ${p.dom}.`};
+  });
+  const subs=SUB_DEFS.map(s=>{
+    const occ=DemoDataGenerator.subOccurrences(s,addD(TODAY,-75));
+    const next=occ.find(o=>o>TODAY);
+    return {...s,nextDue:next,type:'subscription',
+      detectionReason:`نفس المبلغ (${fmt(s.amount,2)} ${SAR}) من «${s.name}» كل ~30 يوم — اشتراك متكرر.`};
+  });
+  return {plans,subs};
+ }
+};
+
+/* ================= CashflowForecaster ================= */
+const CashflowForecaster={
+ avgDaily(txs){
+  const from=addD(TODAY,-30);
+  const disc=txs.filter(t=>t.date>=from&&t.amount<0&&!t.flags.bnpl&&!t.flags.installment&&!t.flags.subscription&&!t.flags.savings);
+  const total=disc.reduce((s,t)=>s-t.amount,0);
+  return Math.round(total/30);
+ },
+ dailyStats(txs){
+  const from=addD(TODAY,-30);const byDay={};
+  txs.filter(t=>t.date>=from&&t.amount<0&&!t.flags.bnpl&&!t.flags.installment&&!t.flags.savings).forEach(t=>{const k=t.date.toDateString();byDay[k]=(byDay[k]||0)-t.amount});
+  const vals=Object.values(byDay);const mean=vals.reduce((a,b)=>a+b,0)/(vals.length||1);
+  const sd=Math.sqrt(vals.reduce((a,b)=>a+(b-mean)**2,0)/(vals.length||1));
+  return {mean,sd,cv:mean?sd/mean:0};
+ },
+ project(state,opts={}){
+  const {plans,subs}=state.obligations;
+  const buffer=500;
+  let bal=state.balance;
+  if(opts.reserve)bal-=opts.reserve;             // funds moved to protected pocket
+  const daily=opts.dailyCap?Math.min(state.avgDaily,opts.dailyCap):state.avgDaily;
+  const pts=[];const horizon=30;
+  for(let i=1;i<=horizon;i++){
+    const d=addD(TODAY,i);const events=[];
+    if(d.getDate()===SALARY.dom){bal+=SALARY.amount;events.push({t:'راتب',amt:SALARY.amount});}
+    plans.forEach(p=>{const due=p.occ.find(o=>o.getTime()===d.getTime());
+      if(due){ if(opts.reserve&&p.type==='bnpl'&&daysTo(due)<=daysToSalary()){events.push({t:p.provider+' (من المحفظة المحمية)',amt:0});}
+        else {bal-=p.monthly;events.push({t:'قسط '+p.provider,amt:-p.monthly});}}});
+    subs.forEach(s=>{if(s.nextDue&&s.nextDue.getTime()===d.getTime()){bal-=s.amount;events.push({t:'اشتراك '+s.name,amt:-s.amount});}
+      else{const o2=new Date(s.nextDue.getFullYear(),s.nextDue.getMonth()+1,s.dom);if(o2.getTime()===d.getTime()){bal-=s.amount;events.push({t:'اشتراك '+s.name,amt:-s.amount});}}});
+    if(d.getDate()===SALARY.dom+1){bal-=300;events.push({t:'تحويل ادخار',amt:-300});}
+    if(opts.extra&&opts.extra.dates.some(x=>x.getTime()===d.getTime())){bal-=opts.extra.amount;events.push({t:opts.extra.label,amt:-opts.extra.amount});}
+    bal-=daily;
+    pts.push({date:d,balance:Math.round(bal),events,danger:bal<buffer});
+  }
+  const dangerDays=pts.filter(p=>p.danger&&p.date<nextSalaryDate());
+  const minPt=pts.slice(0,daysToSalary()).reduce((m,p)=>p.balance<m.balance?p:m,pts[0]);
+  return {pts,dangerDays,minPt,buffer,daily};
+ }
+};
+function nextSalaryDate(){let d=new Date(TODAY.getFullYear(),TODAY.getMonth(),SALARY.dom);if(d<=TODAY)d=new Date(TODAY.getFullYear(),TODAY.getMonth()+1,SALARY.dom);return d}
+function daysToSalary(){return daysTo(nextSalaryDate())}
+
+/* ================= HealthScoreEngine ================= */
+const HealthScoreEngine={
+ compute(state,overrides={}){
+  const {plans,subs}=state.obligations;
+  const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+  const income=SALARY.amount;
+  const planMonthly=plans.reduce((s,p)=>s+(p.nextDue?p.monthly:0),0)+(overrides.extraMonthly||0);
+  const subMonthly=subs.reduce((s,x)=>s+x.amount,0);
+  const oblig=planMonthly+subMonthly;
+  const ratio=oblig/income*100;
+  const bnplPlans=plans.filter(p=>p.type==='bnpl'&&p.nextDue).length+(overrides.extraBnplPlan?1:0);
+  const bnplShare=(plans.filter(p=>p.type==='bnpl'&&p.nextDue).reduce((s,p)=>s+p.monthly,0)+(overrides.extraMonthly||0))/income*100;
+  const monthlyOutflow=oblig+state.avgDaily*30;
+  const bufferM=state.balance/monthlyOutflow;
+  const savingsRate=300/income*100;
+  const cv=state.dailyStats.cv;
+  const dangerDays=overrides.dangerDays??state.forecast.dangerDays.length;
+  const factors=[
+   {key:'ratio',label:'نسبة الالتزامات للدخل',w:.25,score:clamp(100-(ratio-20)*1.8),detail:`${fmt(oblig)} ${SAR} من ${fmt(income)} ${SAR} = ${ratio.toFixed(0)}%`},
+   {key:'bnpl',label:'انكشاف الدفعات الآجلة',w:.15,score:clamp(100-bnplPlans*10-bnplShare*1.2),detail:`${bnplPlans} خطط نشطة تستهلك ${bnplShare.toFixed(0)}% من الراتب`},
+   {key:'risk',label:'مخاطر السيولة القادمة',w:.15,score:clamp(100-dangerDays*12),detail:dangerDays?`${dangerDays} يوم خطر متوقع قبل الراتب`:'لا أيام خطر متوقعة'},
+   {key:'buffer',label:'احتياطي الطوارئ',w:.15,score:clamp(Math.sqrt(bufferM/1.5)*100),detail:`رصيدك يغطي ${(bufferM).toFixed(1)} شهر من مصاريفك (الهدف 1.5+)`},
+   {key:'save',label:'معدل الادخار',w:.10,score:clamp(savingsRate/10*100+20),detail:`تدّخر ${savingsRate.toFixed(1)}% من راتبك شهريًا`},
+   {key:'vol',label:'تقلب الصرف اليومي',w:.10,score:clamp(100-cv*55),detail:`تذبذب صرفك اليومي ${(cv*100).toFixed(0)}%`},
+   {key:'subs',label:'حمل الاشتراكات',w:.10,score:clamp(100-(subMonthly/income*100)*6),detail:`${fmt(subMonthly)} ${SAR}/شهر (${(subMonthly/income*100).toFixed(1)}% من الراتب)`},
+  ];
+  const value=Math.round(factors.reduce((s,f)=>s+f.score*f.w,0));
+  return {value,factors,ratio:Math.round(ratio),oblig,subMonthly,planMonthly,bnplPlans};
+ }
+};
+
+/* ================= ScenarioSimulator ================= */
+const ScenarioSimulator={
+ run(state,dec){ // dec:{label, amount, months, upfront, startInDays, type}
+  const monthly=Math.round(dec.amount/dec.months);
+  const first=addD(TODAY,dec.startInDays??0);
+  const dates=[];for(let k=dec.upfront?0:1;k<=dec.months;k++){const d=new Date(first.getFullYear(),first.getMonth()+ (dec.upfront?k:k-1),first.getDate());if(dec.upfront&&k===0)dates.push(first);else dates.push(d);}
+  const before={score:state.score,forecast:state.forecast};
+  const fAfter=CashflowForecaster.project(state,{extra:{amount:monthly,dates,label:dec.label}});
+  const sAfter=HealthScoreEngine.compute(state,{extraMonthly:monthly,extraBnplPlan:dec.type==='bnpl',dangerDays:fAfter.dangerDays.length});
+  const newDanger=fAfter.dangerDays.length-before.forecast.dangerDays.length;
+  const weeklyCut=Math.max(0,Math.ceil((before.forecast.minPt.balance*-1+monthly+500)/4/10)*10);
+  const altDelay=daysToSalary()+1;
+  return {dec,monthly,before:{score:before.score.value,ratio:before.score.ratio,danger:before.forecast.dangerDays,min:before.forecast.minPt},
+    after:{score:sAfter.value,ratio:sAfter.ratio,danger:fAfter.dangerDays,min:fAfter.minPt,forecast:fAfter},
+    newDanger,weeklyCut:Math.max(weeklyCut,Math.ceil(monthly/4/10)*10),altDelay};
+ }
+};
+
+/* ================= PermissionManager ================= */
+const PermissionManager={
+ levels:[
+  {id:'read',label:'القراءة فقط',desc:'يقرأ حساباتك وعملياتك للتحليل',icon:'👁',enabled:true,locked:true,max:null,freq:'مستمر'},
+  {id:'suggest',label:'الاقتراح فقط',desc:'يقترح إجراءات دون تنفيذ أي شيء',icon:'💡',enabled:true,max:null,freq:'مستمر'},
+  {id:'autosave',label:'الادخار التلقائي ضمن حد',desc:'يحوّل مبالغ صغيرة لمحفظة الادخار',icon:'🏦',enabled:false,max:500,freq:'أسبوعيًا'},
+  {id:'protect',label:'حماية الأقساط ضمن حد',desc:'يحجز مبالغ الأقساط القادمة في محفظة محمية',icon:'🛡',enabled:false,max:2500,freq:'شهريًا'},
+  {id:'pay',label:'تنفيذ الدفع بموافقة',desc:'يبدأ عملية دفع — كل عملية تحتاج موافقتك',icon:'💳',enabled:false,max:5000,freq:'كل عملية بموافقة'},
+ ],
+ get(id){return this.levels.find(l=>l.id===id)},
+ isOn(id){const l=this.get(id);return l&&l.enabled},
+ toggle(id,v){const l=this.get(id);if(l&&!l.locked){l.enabled=v;l.lastUsed=l.lastUsed||null;}return l},
+ canExecute(level,amount){const l=this.get(level);if(!l||!l.enabled)return {ok:false,reason:'الصلاحية غير مفعّلة'};
+   if(l.max!=null&&amount>l.max)return {ok:false,reason:`المبلغ ${fmt(amount)} ${SAR} يتجاوز الحد ${fmt(l.max)} ${SAR}`};
+   return {ok:true}},
+ markUsed(id){const l=this.get(id);if(l)l.lastUsed=new Date()},
+};
+/* ================= ActivityLogger ================= */
+const ActivityLogger={
+ events:[],
+ log(type,title,detail,actor='agent'){this.events.unshift({ts:new Date(),type,title,detail,actor});if(App.tab==='log')Views.render();},
+ seed(){
+  const E=this.events;const t=(m)=>addD(TODAY,-0).getTime()-m*60000;
+  const add=(min,type,title,detail,actor)=>E.push({ts:new Date(t(min)),type,title,detail,actor});
+  add(46,'consent','تم منح موافقة Open Banking','نطاق: الحسابات، الأرصدة، العمليات · المدة 90 يوم','bank');
+  add(45,'read','قراءة العمليات','تمت قراءة 243 عملية من مصرف الإنماء','agent');
+  add(44,'classify','تصنيف العمليات','صُنّفت العمليات إلى 9 فئات','agent');
+  add(43,'detect','اكتشاف أقساط BNPL','تمارا، تابي، مدفوع','agent');
+  add(43,'detect','اكتشاف قسط بنكي','قسط تمويل سيارة — الإنماء 1,850 ر.س','agent');
+  add(42,'detect','اكتشاف اشتراكات','6 اشتراكات بمجموع 535 ر.س/شهر','agent');
+  add(41,'risk','رصد أيام خطر متوقعة','احتمال نقص سيولة قبل الراتب','agent');
+  this.events=E.sort((a,b)=>b.ts-a.ts);
+ }
+};
+/* ================= AgentDecisionEngine ================= */
+const AgentDecisionEngine={
+ proposals:[],
+ nextRiskProposal(){
+  const dd=App.state.forecast.dangerDays;
+  if(!dd.length)return null;
+  const reserve=Math.min(1800,PermissionManager.get('protect').max);
+  return {id:'pr-protect',action:'حماية الأقساط القادمة',amount:reserve,permissionRequired:'protect',
+    reason:`متوقع ${dd.length} يوم نقص سيولة قبل راتب ${dstr(nextSalaryDate())}. حجز مبالغ أقساط تمارا وتابي القادمة يضمن سدادها ويزيل أيام الخطر.`,
+    expectedImpact:'أيام الخطر ← 0 · حماية قسطين · اقتراح سقف صرف يومي 75 ر.س',
+    risk:'منخفض — تحويل داخلي بين حساباتك فقط، لا خصم خارجي.'};
+ },
+ affordability(amount,months,type,label){
+  return ScenarioSimulator.run(App.state,{label:label||'عملية شراء',amount,months,type,upfront:false,startInDays:1});
+ },
+ async execute(p){
+  const chk=PermissionManager.canExecute(p.permissionRequired,p.amount);
+  if(!chk.ok){p.status='blocked';ActivityLogger.log('risk','تم منع تنفيذ تلقائي',chk.reason,'agent');toast('🚫 '+chk.reason);Views.render();return;}
+  App.orb('protect');
+  ActivityLogger.log('action','بدء حماية الأقساط',`عبر Open Banking (PIS محاكى): حجز ${fmt(p.amount)} ${SAR}`,'agent');
+  await OpenBankingAdapter.reserveFunds(p.amount,p.reason).catch(()=>{});
+  App.state.reserve=(App.state.reserve||0)+p.amount;
+  App.state.dailyCap=75;
+  PermissionManager.markUsed(p.permissionRequired);
+  App.recompute();
+  p.status='approved';
+  ActivityLogger.log('protect','حُجزت مبالغ الأقساط',`${fmt(p.amount)} ${SAR} في المحفظة المحمية · سقف صرف يومي 75 ر.س · ضمن حد ${fmt(PermissionManager.get('protect').max)} ${SAR}`,'agent');
+  ActivityLogger.log('user','وافقت على حماية الأقساط','إجراء نُفّذ بموافقتك الصريحة','user');
+  App.orb('idle');toast('🛡 تم — أقساطك محمية وأيام الخطر اختفت');Views.render();
+ },
+ reject(p){p.status='rejected';ActivityLogger.log('user','رفضت اقتراح الوكيل',p.action,'user');toast('تم — لن يكرر نيّر هذا الاقتراح');Views.render();}
+};
+
+/* ================= App state + pipeline ================= */
+const App={
+ connected:false,tab:'home',state:{},_orb:'idle',
+ orb(s){this._orb=s;document.querySelectorAll('.orb[data-live]').forEach(o=>o.dataset.state=s)},
+ async runPipeline(){
+  const accounts=await OpenBankingAdapter.accounts();
+  const bal=(await OpenBankingAdapter.balances())[0];
+  const raw=await OpenBankingAdapter.transactions();
+  const txs=TransactionClassifier.run(raw);
+  const obligations=ObligationDetector.detect(txs);
+  this.state={accounts,balance:bal.amount,txs,obligations};
+  this.recompute();
+  this.connected=true;
+ },
+ recompute(){
+  const s=this.state;
+  s.avgDaily=CashflowForecaster.avgDaily(s.txs);
+  s.dailyStats=CashflowForecaster.dailyStats(s.txs);
+  s.forecast=CashflowForecaster.project(s,{reserve:s.reserve||0,dailyCap:s.dailyCap});
+  s.score=HealthScoreEngine.compute(s);
+ },
+};
+/* ================= UI helpers ================= */
+function toast(msg){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2600);}
+function openSheet(html){const r=document.getElementById('sheet-root');r.innerHTML=`<div class="veil" onclick="closeSheet()"></div><div class="sheet"><div class="grab"></div>${html}</div>`;r.classList.add('open');}
+function closeSheet(){document.getElementById('sheet-root').classList.remove('open');}
+function why(title,body){openSheet(`<div class="row" style="gap:10px;margin-bottom:6px"><div class="orb" style="width:30px;height:30px"><div class="ring"></div><div class="core"></div></div><b style="font:600 15px var(--disp)">${esc(title)}</b></div><p style="color:var(--muted);font-size:13.5px;line-height:2;margin:6px 0 12px">${body}</p><div class="card" style="background:var(--safe-dim);border-color:rgba(67,217,174,.3);font-size:12px;color:var(--safe)">شفافية نيّر: كل تصنيف وكل قرار له سبب واضح — لا صندوق أسود.</div>`);}
+const orbEl=(size,live)=>`<div class="orb" style="width:${size}px;height:${size}px" data-state="${App._orb}" ${live?'data-live':''}><div class="ring r2"></div><div class="ring"></div><div class="sweep"></div><div class="core"></div></div>`;
+const catColor=c=>({bnpl:'#7C5CFF',installment:'var(--alinma)',subscription:'#4FA8FF',salary:'var(--safe)',savings:'var(--safe)',coffee:'#C98A4B',delivery:'#FF8A5B',groceries:'#5BC8A0',transport:'#5B9BFF',shopping:'#E07BD0',health:'#FF6B8A',other:'#8893B8'}[c]||'#8893B8');
+const riskTag=lvl=>lvl==='مرتفع'?'<span class="tag r">مرتفع</span>':lvl==='متوسط'?'<span class="tag w">متوسط</span>':'<span class="tag s">منخفض</span>';
+function planRisk(p){if(!p.nextDue)return'منخفض';const dts=daysTo(p.nextDue);return (dts<=daysToSalary()&&App.state.forecast.minPt.balance<p.monthly)?'مرتفع':dts<=daysToSalary()?'متوسط':'منخفض';}
+
+/* ================= score ring svg ================= */
+function ringSVG(val){
+  const r=72,c=2*Math.PI*r,off=c*(1-val/100);
+  const col=val>=70?'var(--safe)':val>=50?'var(--light1)':'var(--risk)';
+  return `<div class="ringwrap"><svg width="168" height="168" viewBox="0 0 168 168">
+    <circle cx="84" cy="84" r="${r}" stroke="rgba(255,255,255,.08)" stroke-width="11" fill="none"/>
+    <circle cx="84" cy="84" r="${r}" stroke="${col}" stroke-width="11" fill="none" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${off}" style="transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1);filter:drop-shadow(0 0 8px ${col})"/>
+  </svg><div class="mid"><b style="color:${col}">${val}</b><span>درجة الصحة المالية</span></div></div>`;
+}
+/* ================= forecast chart svg ================= */
+function forecastSVG(fc,h=150){
+  const pts=[{date:TODAY,balance:App.state.balance-(App.state.reserve||0),danger:false},...fc.pts];
+  const W=360,H=h,pad=8;
+  const min=Math.min(0,...pts.map(p=>p.balance)),max=Math.max(...pts.map(p=>p.balance),App.state.balance);
+  const X=i=>pad+i*(W-2*pad)/(pts.length-1);
+  const Y=v=>H-pad-(v-min)/(max-min||1)*(H-2*pad);
+  const line=pts.map((p,i)=>`${i?'L':'M'}${X(i).toFixed(1)} ${Y(p.balance).toFixed(1)}`).join(' ');
+  const area=line+` L${X(pts.length-1).toFixed(1)} ${H-pad} L${pad} ${H-pad} Z`;
+  const zeroY=Y(fc.buffer);
+  let danger='';pts.forEach((p,i)=>{if(p.danger){danger+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.balance).toFixed(1)}" r="4" fill="var(--risk)" stroke="#0B1024" stroke-width="1.5"/>`;}});
+  // salary marker
+  let sal='';pts.forEach((p,i)=>{if(p.date.getDate()===SALARY.dom&&p.events&&p.events.some(e=>e.amt>0)){sal=`<line x1="${X(i).toFixed(1)}" y1="${pad}" x2="${X(i).toFixed(1)}" y2="${H-pad}" stroke="var(--safe)" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/><text x="${X(i).toFixed(1)}" y="${pad+10}" fill="var(--safe)" font-size="9" text-anchor="middle">راتب</text>`;}});
+  return `<svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="display:block">
+    <defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--light1)" stop-opacity=".28"/><stop offset="1" stop-color="var(--light1)" stop-opacity="0"/></linearGradient></defs>
+    <line x1="${pad}" y1="${zeroY.toFixed(1)}" x2="${W-pad}" y2="${zeroY.toFixed(1)}" stroke="var(--risk)" stroke-width="1" stroke-dasharray="4 4" opacity=".5"/>
+    <text x="${W-pad}" y="${(zeroY-4).toFixed(1)}" fill="var(--risk)" font-size="9" text-anchor="end" opacity=".8">حد الأمان ${fc.buffer}</text>
+    ${sal}<path d="${area}" fill="url(#fg)"/><path d="${line}" fill="none" stroke="var(--light1)" stroke-width="2" stroke-linejoin="round"/>${danger}
+  </svg>`;
+}
+
+/* ================= Views ================= */
+const Views={
+ root:()=>document.getElementById('screen-root'),
+ render(){
+  const fns={home:this.home,obligations:this.obligations,forecast:this.forecast,agent:this.agent,
+    simulator:this.simulator,goals:this.goals,permissions:this.permissions,log:this.log,
+    spending:this.spending,connection:this.connection,privacy:this.privacy,settings:this.settings,more:this.more};
+  const fn=fns[App.tab]||this.home;
+  this.root().innerHTML=`<div class="view">${fn.call(this)}</div>`;
+  this.bind();
+ },
+ // ---------- DASHBOARD ----------
+ home(){
+  const s=App.state,sc=s.score,fc=s.forecast;
+  const prop=AgentDecisionEngine.nextRiskProposal();
+  const dd=fc.dangerDays;
+  return `
+  <div class="card glow" style="text-align:center;padding:18px 16px 22px">
+    ${ringSVG(sc.value)}
+    <button class="why" onclick="Views.scoreWhy()" style="margin-top:4px">ليش هذي درجتك؟</button>
+    <div class="grid2" style="margin-top:14px">
+      <div class="stat"><span>الرصيد المتاح</span><b>${fmt(s.balance-(s.reserve||0))} <small style="font-size:11px">${SAR}</small></b></div>
+      <div class="stat"><span>التزامات الشهر</span><b style="color:var(--light1)">${fmt(sc.oblig)} <small style="font-size:11px">${SAR}</small></b></div>
+    </div>
+    ${s.reserve?`<div class="tag s" style="margin-top:10px">🛡 محفظة محمية: ${fmt(s.reserve)} ${SAR}</div>`:''}
+  </div>
+
+  ${dd.length?`<div class="card risk">
+    <div class="row"><b style="font:600 14px var(--disp);flex:1">⚠️ ${dd.length} يوم خطر قبل الراتب</b>${riskTag('مرتفع')}</div>
+    <p style="font-size:12.5px;color:var(--muted);line-height:1.9;margin-top:8px">أقرب يوم خطر <b style="color:var(--text)">${dstr(dd[0].date)}</b> — الرصيد المتوقع ${money(dd[0].balance)} وهو دون حد الأمان.</p>
+    <button class="why" onclick="Views.dangerWhy()" style="margin-top:8px">ليش هذا اليوم خطر؟</button>
+  </div>`:`<div class="card safe"><b style="font:600 14px var(--disp)">✅ لا أيام خطر متوقعة</b><p style="font-size:12.5px;color:var(--muted);margin-top:6px">تدفقك النقدي آمن حتى راتب ${dstr(nextSalaryDate())}.</p></div>`}
+
+  ${prop&&!AgentDecisionEngine.proposals.find(p=>p.id===prop.id&&p.status)?`
+  <div class="section-t"><b>نيّر يقترح إجراءً</b><span class="tag g">يحتاج موافقتك</span></div>
+  ${this.proposalCard(prop)}`:''}
+
+  <div class="section-t"><b>التزاماتك في مكان واحد</b><a onclick="go('obligations')">عرض الكل</a></div>
+  <div class="card">${s.obligations.plans.map(p=>this.obligationRow(p)).join('')}</div>
+
+  <div class="section-t"><b>توقع الرصيد · 30 يوم</b><a onclick="go('forecast')">تفاصيل</a></div>
+  <div class="card">${forecastSVG(fc,120)}
+    <div class="legend"><span><i style="background:var(--light1)"></i>الرصيد المتوقع</span><span><i style="background:var(--risk)"></i>يوم خطر</span><span><i style="background:var(--safe)"></i>راتب</span></div>
+  </div>`;
+ },
+ proposalCard(p){
+  const done=p.status;
+  return `<div class="proposal ${done?'done':''}">
+   <div class="ph">${orbEl(28,false)}<b style="flex:1">${esc(p.action)}</b>
+     ${done?`<span class="status ${p.status==='approved'?'tag s':'tag r'}" style="border:0">${p.status==='approved'?'✓ نُفّذ':'مرفوض'}</span>`:`<span class="num" style="font:700 14px var(--disp);color:var(--light1)">${fmt(p.amount)} ${SAR}</span>`}</div>
+   <div class="pb">
+     <div class="kv"><span>السبب</span></div><p style="font-size:12.5px;color:var(--muted);line-height:1.9;margin:-2px 0 6px">${p.reason}</p>
+     <div class="kv"><span>الأثر المتوقع</span><b style="color:var(--safe);font-size:11.5px">${p.expectedImpact}</b></div>
+     <div class="kv"><span>المخاطر</span><b style="font-size:11.5px">${p.risk}</b></div>
+     <div class="kv"><span>الصلاحية المطلوبة</span><b style="font-size:11.5px">${PermissionManager.get(p.permissionRequired).label}</b></div>
+     ${!done?`<div class="btnrow"><button class="btn safe sm" onclick="AgentDecisionEngine.execute(getProp('${p.id}'))">موافقة وتنفيذ</button><button class="btn ghost sm" onclick="AgentDecisionEngine.reject(getProp('${p.id}'))">رفض</button><button class="btn ghost sm" style="flex:0 0 auto" onclick="Views.editProp('${p.id}')">تعديل</button></div>`:''}
+   </div></div>`;
+ },
+ obligationRow(p){
+  const pct=Math.round(p.paidCount/p.count*100);
+  return `<div class="litem" onclick="Views.oblDetail('${p.id}')">
+   <div class="licon" style="background:${p.clr}22;color:${p.clr};border:1px solid ${p.clr}55">${p.provider[0]}</div>
+   <div class="grow"><div class="t">${esc(p.provider)} ${p.estimated?'<span class="tag g" style="font-size:9px;padding:1px 6px">تقدير</span>':''}</div>
+     <div class="d">${esc(p.item)}</div>
+     <div class="bar"><i style="width:${pct}%"></i></div></div>
+   <div class="amt">${fmt(p.monthly)} ${SAR}<small>${p.nextDue?'يستحق '+dstr(p.nextDue):'مكتمل'}</small></div>
+  </div>`;
+ },
+ scoreWhy(){
+  const f=App.state.score.factors;
+  openSheet(`<b style="font:700 17px var(--disp)">تفصيل درجتك: ${App.state.score.value}/100</b>
+   <p style="color:var(--muted);font-size:12.5px;margin:8px 0 14px">كل عامل له وزن وسبب واضح. الدرجة = مجموع (العامل × وزنه).</p>
+   ${f.map(x=>{const col=x.score>=70?'var(--safe)':x.score>=50?'var(--light1)':'var(--risk)';return `
+    <div style="margin-bottom:13px"><div class="row"><b style="flex:1;font:500 13px var(--body)">${x.label}</b><span class="tag g">وزن ${Math.round(x.w*100)}%</span><b class="num" style="color:${col};margin-right:8px">${x.score}</b></div>
+    <div class="bar" style="margin-top:7px"><i style="width:${x.score}%;background:${col}"></i></div>
+    <div style="font-size:11px;color:var(--faint);margin-top:5px">${x.detail}</div></div>`}).join('')}`);
+ },
+ dangerWhy(){
+  const dd=App.state.forecast.dangerDays[0];if(!dd)return;
+  const causes=dd.events.filter(e=>e.amt<0).map(e=>e.t+' ('+fmt(-e.amt)+' '+SAR+')').join('، ')||'تراكم الصرف اليومي';
+  why('ليش يوم '+dstr(dd.date)+' خطر؟',`في هذا اليوم يجتمع: ${causes}، مع متوسط صرفك اليومي ${fmt(App.state.forecast.daily)} ${SAR}. النتيجة أن الرصيد المتوقع ينزل إلى <b style="color:var(--risk)">${fmt(dd.balance)} ${SAR}</b> — تحت حد الأمان (${App.state.forecast.buffer} ${SAR}) وقبل وصول الراتب يوم ${dstr(nextSalaryDate())}.`);
+ },
+ editProp(id){const p=getProp(id);openSheet(`<b style="font:700 16px var(--disp)">تعديل المبلغ المحجوز</b><p style="color:var(--muted);font-size:12.5px;margin:8px 0 12px">الحد الأقصى للصلاحية: ${fmt(PermissionManager.get(p.permissionRequired).max)} ${SAR}</p><input class="fld" id="ev" type="number" value="${p.amount}"><button class="btn" onclick="(function(){var v=+document.getElementById('ev').value;getProp('${id}').amount=Math.min(v,${PermissionManager.get(p.permissionRequired).max});closeSheet();Views.render();})()">حفظ</button>`);},
+
+ // ---------- OBLIGATIONS ----------
+ obligations(){
+  const s=App.state,{plans,subs}=s.obligations;
+  const subTotal=subs.reduce((a,b)=>a+b.amount,0);
+  const cal=[...plans.filter(p=>p.nextDue).map(p=>({d:p.nextDue,name:p.provider,amt:p.monthly,clr:p.clr})),
+             ...subs.filter(x=>x.nextDue).map(x=>({d:x.nextDue,name:x.name,amt:x.amount,clr:'#4FA8FF'}))]
+             .sort((a,b)=>a.d-b.d).slice(0,7);
+  return `<h2 class="vt">التزاماتي</h2><p class="vs">كل ما تدين به — BNPL وأقساط واشتراكات — مجموعًا في مكان واحد.</p>
+  <div class="grid2">
+    <div class="stat"><span>حمل الشهر</span><b style="color:var(--light1)">${fmt(s.score.oblig)} ${SAR}</b></div>
+    <div class="stat"><span>نسبة من الراتب</span><b style="color:${s.score.ratio>30?'var(--risk)':'var(--text)'}">${s.score.ratio}%</b></div>
+  </div>
+  <div class="section-t"><b>الدفعات الآجلة والأقساط</b></div>
+  <div class="card">${plans.map(p=>this.obligationRow(p)).join('')}</div>
+  <div class="section-t"><b>الاشتراكات</b><span class="tag g">${fmt(subTotal,2)} ${SAR}/شهر</span></div>
+  <div class="card">${subs.map(x=>`<div class="litem" onclick="Views.subWhy('${x.id}')">
+    <div class="licon" style="background:#4FA8FF22;color:#4FA8FF;border:1px solid #4FA8FF55">${x.name[0]}</div>
+    <div class="grow"><div class="t">${esc(x.name)}</div><div class="d">${esc(x.cat)} · يتجدد ${x.nextDue?dstr(x.nextDue):''}</div></div>
+    <div class="amt">${fmt(x.amount,2)} ${SAR}</div></div>`).join('')}
+    <button class="btn ghost sm" style="width:100%;margin-top:10px" onclick="Views.subReview()">مراجعة الاشتراكات — وفّر ${fmt(subs.find(x=>x.id==='gym').amount+subs.find(x=>x.id==='youtube').amount,2)} ${SAR}</button>
+  </div>
+  <div class="section-t"><b>تقويم الاستحقاقات القادم</b></div>
+  <div class="card"><div class="tl">${cal.map(c=>`<div class="tlitem ${daysTo(c.d)<=daysToSalary()?'risk':''}"><b>${esc(c.name)}</b> — ${money(c.amt)}<div class="tm">${dstr(c.d)} · بعد ${daysTo(c.d)} يوم</div></div>`).join('')}</div></div>`;
+ },
+ oblDetail(id){
+  const p=App.state.obligations.plans.find(x=>x.id===id);if(!p)return;
+  const pct=Math.round(p.paidCount/p.count*100),risk=planRisk(p);
+  openSheet(`<div class="row" style="margin-bottom:12px"><div class="licon" style="width:46px;height:46px;background:${p.clr}22;color:${p.clr};border:1px solid ${p.clr}55;font-size:17px">${p.provider[0]}</div>
+    <div class="grow"><b style="font:700 16px var(--disp)">${esc(p.provider)}</b><div style="font-size:12px;color:var(--muted);margin-top:3px">${esc(p.item)}</div></div>${riskTag(risk)}</div>
+   <div class="bar" style="height:9px"><i class="${risk==='مرتفع'?'r':''}" style="width:${pct}%"></i></div>
+   <div style="font-size:11px;color:var(--muted);margin:7px 0 14px">دُفع ${p.paidCount} من ${p.count} (${pct}%)</div>
+   <div class="card" style="margin:0">
+     <div class="kv"><span>القسط الشهري</span><b>${fmt(p.monthly)} ${SAR}</b></div>
+     <div class="kv"><span>الإجمالي ${p.estimated?'(تقدير)':''}</span><b>${fmt(p.total)} ${SAR}</b></div>
+     <div class="kv"><span>المدفوع</span><b style="color:var(--safe)">${fmt(p.paidAmt)} ${SAR}</b></div>
+     <div class="kv"><span>المتبقي</span><b style="color:var(--light1)">${fmt(p.remaining)} ${SAR}</b></div>
+     <div class="kv"><span>الاستحقاق القادم</span><b>${p.nextDue?dstr(p.nextDue):'مكتمل'}</b></div>
+   </div>
+   <button class="why" style="margin:12px 2px" onclick="why('ليش اكتشفنا هذا الالتزام؟','${p.detectionReason.replace(/'/g,'')}')">ليش اكتشف نيّر هذا؟</button>`);
+ },
+ subWhy(id){const x=App.state.obligations.subs.find(s=>s.id===id);why('اشتراك: '+x.name,x.detectionReason+` التكلفة السنوية ≈ ${fmt(x.amount*12)} ${SAR}.`);},
+ subReview(){why('مراجعة الاشتراكات','اشتراكاتك تستهلك '+fmt(App.state.score.subMonthly,2)+' '+SAR+' شهريًا. لاحظ نيّر أن «وقت اللياقة» و«يوتيوب بريميوم» لم يظهر لهما نشاط مرتبط مؤخرًا — مراجعتهما قد توفّر ≈ '+fmt((199+23.99)*12,0)+' '+SAR+' سنويًا. القرار لك دائمًا — نيّر يقترح فقط.');},
+
+ // ---------- FORECAST ----------
+ forecast(){
+  const fc=App.state.forecast,dd=fc.dangerDays;
+  const upcoming=fc.pts.filter(p=>p.events.length).slice(0,8);
+  return `<h2 class="vt">توقع التدفق النقدي</h2><p class="vs">رصيدك المتوقع لـ 30 يوم القادمة، مع أيام الخطر وأسبابها.</p>
+   <div class="card glow">${forecastSVG(fc,170)}
+    <div class="legend"><span><i style="background:var(--light1)"></i>الرصيد</span><span><i style="background:var(--risk)"></i>يوم خطر</span><span><i style="background:var(--safe)"></i>راتب ${dstr(nextSalaryDate())}</span></div>
+   </div>
+   <div class="grid2">
+    <div class="stat"><span>أدنى رصيد متوقع</span><b style="color:${fc.minPt.balance<fc.buffer?'var(--risk)':'var(--text)'}">${fmt(fc.minPt.balance)} ${SAR}</b><div style="font-size:10px;color:var(--faint);margin-top:3px">${dstr(fc.minPt.date)}</div></div>
+    <div class="stat"><span>أيام الخطر</span><b style="color:${dd.length?'var(--risk)':'var(--safe)'}">${dd.length}</b><div style="font-size:10px;color:var(--faint);margin-top:3px">قبل الراتب</div></div>
+   </div>
+   <div class="card" style="background:var(--card2)"><div class="row"><span style="font-size:12px;color:var(--muted);flex:1">مستوى الثقة في التوقع</span><span class="tag s">عالٍ للأحداث المجدولة</span></div>
+     <p style="font-size:11.5px;color:var(--faint);line-height:1.8;margin-top:8px">الراتب والأقساط مواعيدها ومبالغها معروفة (ثقة عالية). الصرف اليومي تقدير من متوسط آخر 30 يوم (${fmt(fc.daily)} ${SAR}/يوم ± تذبذب ${(App.state.dailyStats.cv*100).toFixed(0)}%).</p></div>
+   ${dd.length?`<div class="card risk"><b style="font:600 14px var(--disp)">وش يقدر نيّر يسوي؟</b>
+     <p style="font-size:12.5px;color:var(--muted);margin:8px 0 10px">يحجز مبالغ الأقساط القادمة ويقترح سقف صرف يومي — فتختفي أيام الخطر.</p>
+     <button class="btn safe sm" style="width:100%" onclick="Views.protectFromForecast()">🛡 اطلب من نيّر حماية أقساطك</button></div>`:''}
+   <div class="section-t"><b>الأحداث القادمة</b></div>
+   <div class="card"><div class="tl">${upcoming.map(p=>`<div class="tlitem ${p.danger?'risk':p.events.some(e=>e.amt>0)?'user':''}">${p.events.map(e=>`${esc(e.t)} ${e.amt?money(e.amt):''}`).join(' · ')}<div class="tm">${dstr(p.date)} · رصيد متوقع ${fmt(p.balance)} ${SAR}</div></div>`).join('')}</div></div>`;
+ },
+ protectFromForecast(){const prop=AgentDecisionEngine.nextRiskProposal();if(prop)AgentDecisionEngine.execute(prop);},
+
+ // ---------- SPENDING ANALYSIS ----------
+ spending(){
+  const from=addD(TODAY,-30);
+  const byCat={};App.state.txs.filter(t=>t.date>=from&&t.amount<0).forEach(t=>{byCat[t.category]=(byCat[t.category]||0)-t.amount});
+  const arr=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  const total=arr.reduce((a,b)=>a+b[1],0);
+  const top=arr[0];
+  return `<h2 class="vt">تحليل الصرف</h2><p class="vs">إلى أين تذهب فلوسك؟ آخر 30 يوم.</p>
+   <div class="card glow"><div class="row"><div class="grow"><div style="font-size:12px;color:var(--muted)">إجمالي الصرف</div><b style="font:800 26px var(--disp)">${fmt(total)} <small style="font-size:13px">${SAR}</small></b></div>${orbEl(44,false)}</div></div>
+   <div class="card risk" style="display:flex;gap:10px;align-items:center"><div style="font-size:22px">🔍</div><div><b style="font:600 13px var(--disp)">أكثر شيء يسحب فلوسك</b><div style="font-size:12px;color:var(--muted);margin-top:4px">${CAT_AR[top[0]]} — ${fmt(top[1])} ${SAR} (${Math.round(top[1]/total*100)}% من صرفك)</div></div></div>
+   <div class="section-t"><b>حسب الفئة</b></div>
+   <div class="card">${arr.map(([c,v])=>`<div style="margin-bottom:13px"><div class="row"><div class="licon" style="width:30px;height:30px;border-radius:9px;background:${catColor(c)}22;color:${catColor(c)}">${''}</div><b style="flex:1;font:500 13px var(--body)">${CAT_AR[c]}</b><b class="num">${fmt(v)} ${SAR}</b></div><div class="bar" style="margin-top:7px"><i style="width:${Math.round(v/arr[0][1]*100)}%;background:${catColor(c)}"></i></div></div>`).join('')}</div>`;
+ },
+
+ // ---------- AGENT CHAT ----------
+ agent(){
+  if(!this._chat){this._chat=[{role:'agent',html:`أنا <b>نيّر</b> — وكيلك المالي. أرى التزاماتك وتوقّع رصيدك. اسألني أو اختر أمرًا:`}];}
+  return `<div class="row" style="margin:10px 0 6px;gap:10px">${orbEl(40,true)}<div><b style="font:600 16px var(--disp)">نيّر</b><div style="font-size:11px;color:var(--safe)">● متصل بحسابك عبر Open Banking</div></div></div>
+   <div class="chatwrap" id="chatwrap">${this._chat.map(m=>`<div class="msg ${m.role}">${m.html}</div>`).join('')}</div>
+   <div class="chips">${['أقدر أشتري جوال بتابي؟','ليش درجتي نزلت؟','وش أكثر شيء يسحب فلوسي؟','احمِ أقساطي هذا الشهر','وفّر لي ٥٠٠٠ للسفر'].map(c=>`<button class="chip" onclick="Views.ask('${c}')">${c}</button>`).join('')}</div>
+   <div id="chatbar"><input id="chatin" placeholder="اكتب أمرك لنيّر…" onkeydown="if(event.key==='Enter')Views.ask(this.value)"><button class="send" onclick="var i=document.getElementById('chatin');Views.ask(i.value)">↑</button></div>`;
+ },
+ ask(text){
+  text=(text||'').trim();if(!text)return;
+  this._chat.push({role:'user',html:esc(text)});
+  this._chat.push({role:'agent',html:'<div class="typing"><i></i><i></i><i></i></div>'});
+  this.render();this.scrollChat();
+  setTimeout(()=>{this._chat.pop();this._chat.push({role:'agent',html:this.agentReply(text)});this.render();this.scrollChat();},850);
+ },
+ agentReply(t){
+  const s=App.state,sc=s.score;
+  const kv=rows=>`<div style="margin-top:8px">${rows.map(([k,v])=>`<div class="mini-kv"><span>${k}</span><b>${v}</b></div>`).join('')}</div>`;
+  if(/تابي|تمارا|أشتري|اشتري|جوال|أقدر/.test(t)){
+   const sim=AgentDecisionEngine.affordability(3200,4,'bnpl','جوال عبر تابي');
+   App.orb('alert');setTimeout(()=>App.orb('idle'),2500);
+   return `حسبتها لك على بيانات حسابك 👇 شراء بـ <b>3,200 ${SAR}</b> على 4 دفعات (800 ${SAR}/شهر):
+    ${kv([['التزام شهري إضافي','+'+fmt(sim.monthly)+' '+SAR],['درجتك','من '+sim.before.score+' ← <b style="color:var(--risk)">'+sim.after.score+'</b>'],['نسبة الالتزامات','من '+sim.before.ratio+'% ← '+sim.after.ratio+'%'],['أيام خطر جديدة','<b style="color:var(--risk)">+'+Math.max(0,sim.newDanger)+'</b>'+(sim.after.danger.length?' (أقربها '+dstr(sim.after.danger[0].date)+')':'')]])}
+    <p style="margin-top:10px;line-height:1.9">رأيي: العملية ممكنة لكنها ترفع الضغط قبل الراتب. <b style="color:var(--safe)">الأأمن:</b> أجّلها ${sim.altDelay} يوم لما يجي الراتب، أو خفّض صرفك الأسبوعي ${fmt(sim.weeklyCut)} ${SAR}.</p>
+    <div class="btnrow"><button class="btn sm" onclick="go('simulator')">افتح المحاكي</button></div>`;
+  }
+  if(/درجت|نزل|score|صحة/.test(t)){
+   const worst=[...sc.factors].sort((a,b)=>a.score-b.score)[0];
+   return `درجتك الآن <b>${sc.value}/100</b>. أكثر عامل يسحبها: <b>${worst.label}</b> (${worst.score}/100) — ${worst.detail}. نسبة التزاماتك ${sc.ratio}% من الراتب. <button class="why" onclick="Views.scoreWhy()" style="margin-top:8px">شوف التفصيل الكامل</button>`;
+  }
+  if(/يسحب|أكثر|صرف|فلوس/.test(t)){
+   const from=addD(TODAY,-30);const byCat={};s.txs.filter(x=>x.date>=from&&x.amount<0).forEach(x=>byCat[x.category]=(byCat[x.category]||0)-x.amount);
+   const arr=Object.entries(byCat).sort((a,b)=>b[1]-a[1]).slice(0,3);
+   return `أكثر ثلاث فئات تسحب فلوسك (آخر 30 يوم):${kv(arr.map(([c,v])=>[CAT_AR[c],fmt(v)+' '+SAR]))}<button class="btn ghost sm" style="margin-top:10px" onclick="go('spending')">تحليل كامل</button>`;
+  }
+  if(/احمِ|احم|أقساط|حماية/.test(t)){
+   const prop=AgentDecisionEngine.nextRiskProposal();
+   if(!prop)return 'أقساطك مغطّاة ولا أرى أيام خطر حاليًا — ما تحتاج حماية الآن. 👍';
+   App.orb('alert');setTimeout(()=>App.orb('idle'),2000);
+   return `تمام. أقترح حجز <b>${fmt(prop.amount)} ${SAR}</b> لأقساط تمارا وتابي القادمة في محفظة محمية، ضمن صلاحية حماية الأقساط (حد ${fmt(PermissionManager.get('protect').max)} ${SAR}). محتاج موافقتك:
+    ${this.proposalCard(prop)}`;
+  }
+  if(/وفّر|وفر|ادخر|سفر|٥٠٠٠|5000|هدف/.test(t)){
+   const weeks=10,wk=Math.ceil(5000/weeks/10)*10;
+   return `هدف <b>5,000 ${SAR}</b> للسفر. على وضعك الحالي أنصح بخطة آمنة لا تلمس أقساطك:${kv([['المبلغ الأسبوعي الآمن',fmt(wk)+' '+SAR],['المدة','~'+weeks+' أسابيع'],['الأثر على أيام الخطر','بدون أثر — يُسحب بعد الراتب']])}<p style="margin-top:8px">أقدر أفعّل الادخار التلقائي ضمن حد ${fmt(PermissionManager.get('autosave').max)} ${SAR}/أسبوع — بموافقتك.</p><div class="btnrow"><button class="btn sm" onclick="go('goals')">أنشئ الهدف</button></div>`;
+  }
+  if(/نادي|اشترك|اشتراك/.test(t)){
+   return `قبل ما تشترك بأي شيء جديد: التزاماتك الحالية ${sc.ratio}% من الراتب ${sc.ratio>30?'<b style="color:var(--warn)">(فوق الموصى به)</b>':''}. إضافة اشتراك شهري سيزيد الحمل. لو ضروري، أقترح مراجعة اشتراك غير مستخدم أولًا لتعويض التكلفة.`;
+  }
+  return `فهمت إنك تسأل عن وضعك المالي. أقدر أساعدك في: فحص قدرتك على الشراء، شرح درجتك، تحليل صرفك، حماية أقساطك، أو خطة ادخار. جرّب أحد الأزرار فوق 👆`;
+ },
+ scrollChat(){setTimeout(()=>{const w=document.getElementById('chatwrap');if(w)w.parentElement.scrollTop=w.parentElement.scrollHeight;},60);},
+
+ // ---------- DECISION SIMULATOR ----------
+ simulator(){
+  if(!this._sim)this._sim={preset:'phone'};
+  const presets={
+    phone:{label:'جوال عبر تابي',amount:3200,months:4,type:'bnpl'},
+    travel:{label:'رحلة سفر',amount:4500,months:1,type:'cash',upfront:true},
+    sub:{label:'اشتراك جديد سنوي',amount:1200,months:12,type:'subscription'},
+    car:{label:'قسط شهري جديد',amount:9000,months:6,type:'installment'},
+  };
+  return `<h2 class="vt">اختبر قرارك</h2><p class="vs">شوف أثر أي قرار على رصيدك ودرجتك قبل ما تاخذه.</p>
+   <div class="seg">${Object.entries({phone:'جوال (تابي)',travel:'سفر',sub:'اشتراك',car:'قسط'}).map(([k,v])=>`<button class="${this._sim.preset===k?'on':''}" onclick="Views._sim.preset='${k}';Views._sim.custom=null;Views.render()">${v}</button>`).join('')}</div>
+   <div class="card"><div style="font-size:12px;color:var(--muted);margin-bottom:8px">أو أدخل قرارك:</div>
+     <input class="fld" id="simAmt" type="number" placeholder="المبلغ ${SAR}" value="${this._sim.custom?this._sim.custom.amount:presets[this._sim.preset].amount}">
+     <select class="fld" id="simMonths"><option value="1">دفعة واحدة</option><option value="3">3 دفعات</option><option value="4" selected>4 دفعات (BNPL)</option><option value="6">6 أشهر</option><option value="12">12 شهر</option></select>
+     <button class="btn" onclick="Views.runSim()">شغّل المحاكاة</button>
+   </div>
+   <div id="simResult"></div>`;
+ },
+ runSim(){
+  const amount=+document.getElementById('simAmt').value||3200;
+  const months=+document.getElementById('simMonths').value||4;
+  const type=months>=12?'subscription':months===1?'cash':months>=6?'installment':'bnpl';
+  const sim=ScenarioSimulator.run(App.state,{label:'قرارك',amount,months,type,upfront:months===1,startInDays:1});
+  const drop=sim.before.score-sim.after.score;
+  const el=document.getElementById('simResult');
+  const cmp=(label,b,a,worse)=>`<div class="kv"><span>${label}</span><b>${b} <span style="color:var(--faint)">←</span> <span style="color:${worse?'var(--risk)':'var(--safe)'}">${a}</span></b></div>`;
+  el.innerHTML=`<div class="card risk" style="margin-top:14px">
+    <div class="row" style="margin-bottom:8px">${orbEl(34,false)}<b style="flex:1;font:600 14px var(--disp)">تحليل نيّر</b><span class="tag ${drop>6?'r':'w'}">${drop>0?'−'+drop:'+'+(-drop)} نقطة</span></div>
+    ${cmp('درجة الصحة المالية',sim.before.score,sim.after.score,drop>0)}
+    ${cmp('نسبة الالتزامات',sim.before.ratio+'%',sim.after.ratio+'%',sim.after.ratio>sim.before.ratio)}
+    ${cmp('أيام الخطر قبل الراتب',sim.before.danger.length,sim.after.danger.length,sim.after.danger.length>sim.before.danger.length)}
+    <div class="kv"><span>التزام شهري إضافي</span><b style="color:var(--light1)">+${fmt(sim.monthly)} ${SAR}</b></div>
+  </div>
+  <div class="card" style="background:var(--card2)"><b style="font:600 13px var(--disp);color:var(--light1)">⚠️ شرح المخاطر</b>
+    <p style="font-size:12.5px;color:var(--muted);line-height:1.9;margin-top:8px">${sim.after.danger.length>sim.before.danger.length?`يظهر يوم خطر جديد حول <b style="color:var(--risk)">${dstr(sim.after.danger[sim.after.danger.length-1].date)}</b> لأن الدفعة الإضافية تخفض رصيدك تحت حد الأمان قبل الراتب.`:'لا يضيف هذا القرار أيام خطر جديدة، لكنه يرفع نسبة التزاماتك ويقلّل مرونتك.'}</p></div>
+  <div class="card safe"><b style="font:600 13px var(--disp)">✅ البديل الأأمن</b>
+    <p style="font-size:12.5px;color:var(--muted);line-height:1.9;margin-top:8px">أجّل القرار <b style="color:var(--safe)">${sim.altDelay} يوم</b> حتى راتب ${dstr(nextSalaryDate())} — تختفي المخاطر تمامًا. أو وزّع التكلفة بخفض صرفك الأسبوعي <b>${fmt(sim.weeklyCut)} ${SAR}</b>.</p></div>`;
+  this.scrollTo(el);
+ },
+ scrollTo(el){setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),80);},
+
+ // ---------- GOALS ----------
+ goals(){
+  if(!this._goals)this._goals=[{id:'g1',name:'صندوق طوارئ',target:10000,saved:2400,weekly:200,clr:'var(--safe)'},{id:'g2',name:'رحلة سفر',target:5000,saved:800,weekly:300,clr:'var(--light1)'}];
+  return `<h2 class="vt">أهدافي</h2><p class="vs">أهداف ادخار يحرسها نيّر — بمبالغ أسبوعية آمنة لا تمسّ أقساطك.</p>
+   ${this._goals.map(g=>{const pct=Math.round(g.saved/g.target*100),wks=Math.ceil((g.target-g.saved)/g.weekly);return `
+   <div class="card" onclick="Views.goalDetail('${g.id}')" style="cursor:pointer"><div class="row"><div class="grow"><b style="font:600 15px var(--disp)">${g.name}</b><div style="font-size:11.5px;color:var(--muted);margin-top:4px">${fmt(g.saved)} من ${fmt(g.target)} ${SAR}</div></div><b class="num" style="color:${g.clr}">${pct}%</b></div>
+     <div class="bar" style="height:9px;margin-top:10px"><i class="${g.clr==='var(--safe)'?'s':''}" style="width:${pct}%;background:${g.clr}"></i></div>
+     <div style="font-size:11px;color:var(--faint);margin-top:8px">${fmt(g.weekly)} ${SAR}/أسبوع · يكتمل خلال ~${wks} أسبوع</div></div>`}).join('')}
+   <button class="btn ghost" onclick="Views.newGoal()">+ هدف جديد</button>`;
+ },
+ goalDetail(id){const g=this._goals.find(x=>x.id===id);const pct=Math.round(g.saved/g.target*100);
+  openSheet(`<b style="font:700 17px var(--disp)">${g.name}</b><div class="ringwrap" style="width:130px;height:130px;margin:14px auto"><svg width="130" height="130" viewBox="0 0 168 168" style="transform:rotate(-90deg)"><circle cx="84" cy="84" r="72" stroke="rgba(255,255,255,.08)" stroke-width="13" fill="none"/><circle cx="84" cy="84" r="72" stroke="${g.clr}" stroke-width="13" fill="none" stroke-linecap="round" stroke-dasharray="${2*Math.PI*72}" stroke-dashoffset="${2*Math.PI*72*(1-pct/100)}"/></svg><div class="mid"><b style="font-size:30px;color:${g.clr}">${pct}%</b></div></div>
+   <div class="card" style="margin:0"><div class="kv"><span>المُدّخر</span><b>${fmt(g.saved)} ${SAR}</b></div><div class="kv"><span>الهدف</span><b>${fmt(g.target)} ${SAR}</b></div><div class="kv"><span>المتبقي</span><b>${fmt(g.target-g.saved)} ${SAR}</b></div><div class="kv"><span>الادخار الأسبوعي</span><b>${fmt(g.weekly)} ${SAR}</b></div></div>
+   <p style="font-size:12px;color:var(--muted);line-height:1.9;margin:12px 2px">نيّر اختار ${fmt(g.weekly)} ${SAR}/أسبوع لأنه آمن على تدفقك ولا يخلق أيام خطر. يُسحب بعد الراتب فقط.</p>
+   <button class="btn safe" onclick="closeSheet();toast('💰 أضيف 200 ر.س للهدف');Views._goals.find(x=>x.id==='${id}').saved+=200;Views.render()">أضف ادخار هذا الأسبوع</button>`);},
+ newGoal(){openSheet(`<b style="font:700 16px var(--disp)">هدف جديد</b><input class="fld" id="gn" placeholder="اسم الهدف" style="margin-top:12px"><input class="fld" id="gt" type="number" placeholder="المبلغ المستهدف ${SAR}"><button class="btn" onclick="(function(){var n=document.getElementById('gn').value||'هدف',t=+document.getElementById('gt').value||3000;Views._goals.push({id:'g'+Date.now(),name:n,target:t,saved:0,weekly:Math.ceil(t/16/10)*10,clr:'var(--light1)'});closeSheet();ActivityLogger.log('action','أنشأت هدف ادخار',n+' — '+t+' ر.س','user');Views.render();})()">إنشاء — نيّر يحسب المبلغ الأسبوعي الآمن</button>`);},
+
+ // ---------- PERMISSIONS ----------
+ permissions(){
+  return `<h2 class="vt">صلاحيات الوكيل</h2><p class="vs">نيّر لا يحرّك أي ريال إلا بصلاحية مفعّلة وضمن حدّها. تحكّم كامل، وإلغاء فوري.</p>
+   ${PermissionManager.levels.map(l=>`
+   <div class="card"><div class="row"><div class="licon" style="background:rgba(255,210,122,.1);border:1px solid var(--line)">${l.icon}</div>
+     <div class="grow"><b style="font:600 13.5px var(--disp)">${l.label}</b><div style="font-size:11.5px;color:var(--muted);margin-top:3px">${l.desc}</div></div>
+     <label class="tgl"><input type="checkbox" ${l.enabled?'checked':''} ${l.locked?'disabled':''} onchange="PermissionManager.toggle('${l.id}',this.checked);ActivityLogger.log('action','تغيير صلاحية','${l.label}: '+(this.checked?'مفعّلة':'موقوفة'),'user');toast(this.checked?'✓ فُعّلت الصلاحية':'تم إيقاف الصلاحية');Views.render()"><i></i></label>
+   </div>
+   ${l.enabled&&!l.locked?`<div style="margin-top:12px;border-top:1px solid var(--line2);padding-top:11px"><div class="kv"><span>الحد الأقصى</span><b>${l.max!=null?fmt(l.max)+' '+SAR:'—'}</b></div><div class="kv"><span>التكرار</span><b>${l.freq}</b></div><div class="kv"><span>آخر استخدام</span><b>${l.lastUsed?dstr(l.lastUsed)+' '+l.lastUsed.getHours()+':'+String(l.lastUsed.getMinutes()).padStart(2,'0'):'لم تُستخدم'}</b></div><div class="row" style="margin-top:8px;gap:8px"><button class="why" onclick="why('${l.label}','هذه الصلاحية تتيح لنيّر: ${l.desc}. الحد الأقصى ${l.max!=null?fmt(l.max)+' ريال':'بلا مبلغ'} ${l.freq}. كل تنفيذ يُسجَّل في سجل النشاط ويُعاد التحقق من الحد لحظة التنفيذ.')">ليش يحتاجها؟</button><a style="font-size:12px;color:var(--light1);margin-right:auto" onclick="go('log')">سجل الإجراءات</a></div></div>`:''}
+   </div>`).join('')}
+   <button class="btn danger" onclick="Views.revokeAll()">🚫 إلغاء كل الصلاحيات والموافقة</button>`;
+ },
+ revokeAll(){openSheet(`<b style="font:700 16px var(--disp)">إلغاء كل شيء؟</b><p style="color:var(--muted);font-size:13px;line-height:1.9;margin:10px 0 14px">سيوقف نيّر كل الصلاحيات ويُلغي موافقة Open Banking. لن يقرأ بياناتك أو يقترح أو ينفّذ أي شيء حتى تعيد الربط. هذا حقك دائمًا.</p><button class="btn danger" onclick="Views.doRevoke()">نعم، ألغِ الكل</button><button class="btn ghost" style="margin-top:8px" onclick="closeSheet()">رجوع</button>`);},
+ async doRevoke(){closeSheet();await OpenBankingAdapter.revoke();PermissionManager.levels.forEach(l=>{if(!l.locked)l.enabled=false});ActivityLogger.log('consent','أُلغيت موافقة Open Banking','أوقف المستخدم كل الصلاحيات والوصول','user');App.connected=false;toast('تم إلغاء كل الصلاحيات');go('connection');},
+
+ // ---------- ACTIVITY LOG ----------
+ log(){
+  const ic={consent:'🔑',read:'👁',classify:'🏷',detect:'🔍',risk:'⚠️',action:'⚙️',protect:'🛡',user:'👤'};
+  return `<h2 class="vt">سجل النشاط</h2><p class="vs">كل ما فعله نيّر — وكل موافقاتك — بشفافية كاملة. لا إجراء خفي.</p>
+   <div class="card"><div class="tl">${ActivityLogger.events.map(e=>`<div class="tlitem ${e.actor==='user'?'user':e.type==='risk'?'risk':''}"><b>${esc(e.title)}</b><div style="font-size:11.5px;color:var(--muted);margin-top:3px">${esc(e.detail)}</div><div class="tm">${ic[e.type]||'•'} ${e.actor==='user'?'أنت':e.actor==='bank'?'البنك':'نيّر'} · ${dstr(e.ts)} ${e.ts.getHours()}:${String(e.ts.getMinutes()).padStart(2,'0')}</div></div>`).join('')}</div></div>`;
+ },
+
+ // ---------- CONNECTION STATUS ----------
+ connection(){
+  const c=OpenBankingAdapter.consent();
+  const expired=c&&(c.Status==='Expired');const revoked=c&&c.Status==='Revoked';const ok=c&&c.Status==='Authorised';
+  return `<h2 class="vt">حالة الربط</h2><p class="vs">اتصالك بمصرف الإنماء عبر Open Banking — تتحكم فيه بالكامل.</p>
+   <div class="card ${ok?'safe':'risk'}" style="text-align:center;padding:20px">
+     <div class="alinma-mark" style="width:56px;height:56px;margin:0 auto 12px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M4 18V8l8-5 8 5v10M4 18h16M9 18v-5h6v5" stroke="var(--alinma)" stroke-width="1.6"/></svg></div>
+     <b style="font:700 16px var(--disp)">مصرف الإنماء</b>
+     <div style="margin-top:10px">${ok?'<span class="tag s">● متصل</span>':expired?'<span class="tag w">انتهت الموافقة</span>':'<span class="tag r">غير متصل</span>'}</div>
+     ${c?`<div style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:2">رقم الموافقة: <span class="num">${c.ConsentId}</span><br>تنتهي: ${new Date(c.ExpirationDateTime).getDate()} ${AR_M[new Date(c.ExpirationDateTime).getMonth()]}</div>`:''}
+   </div>
+   ${expired?`<div class="card risk"><b style="font:600 13px var(--disp)">⚠️ انتهت صلاحية الموافقة</b><p style="font-size:12.5px;color:var(--muted);margin:8px 0 10px">توقف نيّر عن قراءة بياناتك. جدّد الموافقة (90 يوم) للمتابعة — حالة خطأ حقيقية في Open Banking.</p><button class="btn" onclick="Views.renew()">تجديد الموافقة</button></div>`:''}
+   ${revoked||!c?`<div class="card"><p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">لا يوجد اتصال نشط. أعد الربط لتفعيل نيّر.</p><button class="btn" onclick="startConnect()">إعادة الربط بمصرف الإنماء</button></div>`:''}
+   <div class="section-t"><b>النطاق المصرّح</b></div>
+   <div class="card">${(c?c.Permissions:['ReadAccountsBasic','ReadBalances','ReadTransactionsDetail']).map(p=>`<div class="kv"><span>${({ReadAccountsBasic:'قراءة الحسابات',ReadBalances:'قراءة الأرصدة',ReadTransactionsDetail:'قراءة العمليات (12 شهر)'})[p]||p}</span><b style="color:var(--safe)">✓</b></div>`).join('')}
+     <div class="kv"><span>تحريك أموال دون إذن</span><b style="color:var(--risk)">✗ ممنوع</b></div></div>
+   ${ok?`<button class="btn ghost" onclick="Views.simExpiry()">محاكاة انتهاء الموافقة (للعرض)</button><button class="btn danger" style="margin-top:8px" onclick="Views.revokeAll()">إلغاء الموافقة</button>`:''}`;
+ },
+ async renew(){toast('⏳ جاري التجديد…');await OpenBankingAdapter.renew();if(!App.connected){await App.runPipeline();}ActivityLogger.log('consent','جُددت موافقة Open Banking','مدة جديدة 90 يوم','user');App.connected=true;toast('✓ تم تجديد الموافقة');this.render();},
+ simExpiry(){OpenBankingAdapter.simulateExpiry();App.connected=false;ActivityLogger.log('consent','انتهت صلاحية الموافقة','حالة Open Banking: CONSENT_EXPIRED','bank');toast('انتهت صلاحية الموافقة — جرّب التجديد');this.render();},
+
+ // ---------- PRIVACY ----------
+ privacy(){
+  return `<h2 class="vt">الخصوصية والبيانات</h2><p class="vs">بياناتك تخصّك. هذه قواعد نيّر — غير قابلة للتفاوض.</p>
+   ${[['🔒','لا تحريك أموال دون إذن','كل عملية مالية تحتاج موافقتك الصريحة وضمن حد محدد.'],['📋','كل إجراء مُسجّل','تشوف كل ما فعله نيّر في سجل النشاط، بالوقت والسبب.'],['↩️','إلغاء فوري','تلغي أي صلاحية أو الموافقة كاملة بضغطة — يتوقف نيّر حالًا.'],['💡','شفافية كاملة','كل تصنيف وكل قرار وكل تنبيه له سبب واضح — لا صندوق أسود.'],['🤝','لغة داعمة لا لوم','نيّر يساعدك بأرقام واضحة، بدون لهجة لوم أو تخويف.'],['🧪','بيانات تجريبية الآن','هذه النسخة تستخدم بيانات تجريبية (Sandbox) — جاهزة للربط الحقيقي عبر إطار SAMA للخدمات المصرفية المفتوحة.']].map(([i,t,d])=>`<div class="card"><div class="row"><div style="font-size:20px">${i}</div><div class="grow"><b style="font:600 13.5px var(--disp)">${t}</b><div style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.8">${d}</div></div></div></div>`).join('')}
+   <button class="btn ghost" onclick="Views.exportData()">تصدير بياناتي</button>
+   <button class="btn danger" style="margin-top:8px" onclick="Views.revokeAll()">حذف الوصول وإيقاف نيّر</button>`;
+ },
+ exportData(){toast('📦 (تجريبي) سيُصدَّر ملف ببياناتك بصيغة JSON');},
+
+ // ---------- SETTINGS / MORE ----------
+ more(){
+  const items=[['spending','تحليل الصرف','📊'],['goals','أهدافي','🎯'],['permissions','صلاحيات الوكيل','🛡'],['log','سجل النشاط','📋'],['connection','حالة الربط','🔗'],['privacy','الخصوصية والبيانات','🔒'],['settings','الإعدادات','⚙️']];
+  return `<h2 class="vt">المزيد</h2><div class="card">${items.map(([t,n,i])=>`<div class="litem" onclick="go('${t}')"><div class="licon" style="background:rgba(255,210,122,.08);border:1px solid var(--line2)">${i}</div><div class="grow"><div class="t">${n}</div></div><span style="color:var(--faint)">‹</span></div>`).join('')}</div>
+   <div class="card" style="text-align:center;padding:18px">${orbEl(40,false)}<div style="font:600 14px var(--disp);margin-top:8px">نيّر · NAIR</div><div style="font-size:11px;color:var(--faint);margin-top:4px">وكيل مالي ذكي للخدمات المصرفية المفتوحة · Amad 2026</div></div>`;
+ },
+ settings(){
+  return `<h2 class="vt">الإعدادات</h2>
+   ${[['تنبيهات أيام الخطر',true],['تنبيه قبل عملية شراء مرتفعة',true],['اقتراحات استباقية من نيّر',true],['الوضع الليلي',true]].map(([t,v])=>`<div class="card"><div class="row"><b style="flex:1;font:500 13.5px var(--body)">${t}</b><label class="tgl"><input type="checkbox" ${v?'checked':''}><i></i></label></div></div>`).join('')}
+   <div class="card"><div class="kv"><span>البنك الأساسي</span><b>مصرف الإنماء</b></div><div class="kv"><span>العملة</span><b>ريال سعودي</b></div><div class="kv"><span>مصدر البيانات</span><b style="color:var(--light1)">تجريبي (Sandbox)</b></div></div>
+   <button class="btn ghost" onclick="document.getElementById('demo-fab').click()">▶ تشغيل وضع العرض للمحكّمين</button>`;
+ },
+
+ // ---------- bind ----------
+ bind(){App.orb(App._orb);if(App.tab==='agent')this.scrollChat();}
+};
+function getProp(id){let p=AgentDecisionEngine.proposals.find(x=>x.id===id);if(!p){p=AgentDecisionEngine.nextRiskProposal();if(p&&p.id===id)AgentDecisionEngine.proposals.push(p);}return p;}
+
+/* ================= Router / tab bar ================= */
+const TABS=[['home','الرئيسية','M3 11l9-8 9 8M5 9v11h5v-6h4v6h5V9'],
+ ['obligations','التزاماتي','M3 7h18M3 12h18M3 17h12'],
+ ['agent','نيّر','orb'],
+ ['forecast','التوقعات','M3 17l5-5 4 4 8-9'],
+ ['more','المزيد','M5 12h.01M12 12h.01M19 12h.01']];
+function renderTabs(){
+ document.getElementById('tabbar').innerHTML=TABS.map(([id,label,icon])=>
+  id==='agent'
+   ?`<button class="tab center ${App.tab===id?'on':''}" onclick="go('${id}')">${orbEl(52,true)}<span style="margin-top:4px">${label}</span></button>`
+   :`<button class="tab ${App.tab===id?'on':''}" onclick="go('${id}')"><svg viewBox="0 0 24 24"><path d="${icon}"/></svg><span>${label}</span></button>`
+ ).join('');
+}
+function go(tab){App.tab=tab;if(['home','obligations','agent','forecast','more'].includes(tab)||true){}closeSheet();renderTabs();Views.render();document.getElementById('screen-root').scrollTop=0;}
+function renderAppBar(){
+ const sc=App.state.score;const col=sc.value>=70?'var(--safe)':sc.value>=50?'var(--light1)':'var(--risk)';
+ document.getElementById('appbar').innerHTML=`${orbEl(34,true)}<div><h1>نيّر</h1><div class="sub">وكيلك المالي</div></div><div class="spacer"></div><div class="score-chip" onclick="Views.scoreWhy()"><span class="dot" style="background:${col}"></span>${sc.value}/100</div>`;
+}
+
+/* ================= Onboarding & connection flow (full-screen takeovers) ================= */
+function takeover(html){document.getElementById('appbar').hidden=true;document.getElementById('tabbar').hidden=true;document.getElementById('demo-fab').hidden=true;
+ document.getElementById('screen-root').innerHTML=`<div class="view">${html}</div>`;Views.bind();}
+function enterApp(tab){document.getElementById('appbar').hidden=false;document.getElementById('tabbar').hidden=false;document.getElementById('demo-fab').hidden=false;renderAppBar();renderTabs();go(tab||'home');}
+
+function splash(){
+ takeover(`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:78vh">
+  ${orbEl(120,true)}
+  <h1 style="font:800 44px var(--disp);margin-top:30px;letter-spacing:1px;background:linear-gradient(135deg,#FFF3D6,var(--light2));-webkit-background-clip:text;background-clip:text;color:transparent">نيّر</h1>
+  <div style="font:600 13px var(--disp);letter-spacing:6px;color:var(--muted);margin-top:6px">N A I R</div>
+  <p style="color:var(--muted);font-size:13.5px;line-height:2;margin-top:20px;max-width:280px">وكيلك المالي الذكي للخدمات المصرفية المفتوحة. يكشف التزاماتك المخفية، يتنبأ بأيام الخطر، ويحمي مدفوعاتك — بموافقتك.</p>
+  <button class="btn" style="margin-top:30px;max-width:280px" onclick="onboard(0)">ابدأ</button>
+ </div>`);
+ App.orb('idle');setTimeout(()=>App.orb('scanning'),400);setTimeout(()=>App.orb('idle'),2200);
+}
+const ONB=[
+ {ic:'🧩',t:'التزاماتك مبعثرة',d:'تمارا تعرض تمارا. تابي تعرض تابي. البنك يعرض القسط. لا أحد يعرض الصورة كاملة — فتفاجئك نهاية الشهر.'},
+ {ic:'💡',t:'نيّر يجمعها ويضيئها',d:'يقرأ حسابك في الإنماء عبر Open Banking، يكتشف كل التزاماتك تلقائيًا، ويتنبأ برصيدك 30 يوم قدّام.'},
+ {ic:'🛡',t:'يحميك — بإذنك',d:'يقترح، يشرح، ويطلب موافقتك قبل أي إجراء. لا تحريك أموال دون إذن. إلغاء فوري في أي وقت.'}];
+function onboard(i){
+ if(i>=ONB.length)return startConnect();
+ const o=ONB[i];
+ takeover(`<div style="height:100%;display:flex;flex-direction:column;justify-content:center;min-height:80vh">
+  <div style="font-size:60px;text-align:center;margin-bottom:10px">${o.ic}</div>
+  <h2 style="font:700 26px var(--disp);text-align:center">${o.t}</h2>
+  <p style="color:var(--muted);font-size:14px;line-height:2;text-align:center;margin:14px auto 0;max-width:300px">${o.d}</p>
+  <div style="display:flex;gap:6px;justify-content:center;margin:28px 0">${ONB.map((_,k)=>`<div style="width:${k===i?22:7}px;height:7px;border-radius:99px;background:${k===i?'var(--light1)':'rgba(255,255,255,.15)'};transition:.3s"></div>`).join('')}</div>
+  <button class="btn" onclick="onboard(${i+1})">${i===ONB.length-1?'اربط حسابك':'التالي'}</button>
+  ${i<ONB.length-1?`<button class="btn ghost" style="margin-top:8px" onclick="startConnect()">تخطّي</button>`:''}
+ </div>`);
+}
+function startConnect(){
+ takeover(`<h2 class="vt" style="margin-top:24px">اربط بنكك</h2><p class="vs">نيّر مبني على مصرف الإنماء كبنك أساسي عبر إطار SAMA للخدمات المصرفية المفتوحة.</p>
+  <div class="card glow" onclick="consentScreen()" style="cursor:pointer;border-color:rgba(201,162,75,.4)"><div class="row"><div class="alinma-mark"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 18V8l8-5 8 5v10M4 18h16M9 18v-5h6v5" stroke="var(--alinma)" stroke-width="1.6"/></svg></div><div class="grow"><b style="font:600 15px var(--disp)">مصرف الإنماء</b><div style="font-size:11.5px;color:var(--safe);margin-top:3px">● البنك الأساسي · مدعوم بالكامل</div></div><span style="color:var(--light1);font-size:20px">›</span></div></div>
+  <div class="section-t"><b>بنوك أخرى</b><span class="tag g">لاحقًا</span></div>
+  ${['الراجحي','الأهلي','الرياض'].map(b=>`<div class="card" style="opacity:.5"><div class="row"><div class="licon" style="background:var(--card2);border:1px solid var(--line2)">${b[0]}</div><div class="grow"><b style="font:500 13.5px var(--body)">مصرف ${b}</b></div><span class="tag g">قريبًا</span></div></div>`).join('')}
+  <p style="font-size:11px;color:var(--faint);text-align:center;margin-top:14px;line-height:1.8">🧪 بيانات تجريبية (Sandbox) · المعمارية جاهزة للربط الحقيقي عبر مختبر SAMA للخدمات المصرفية المفتوحة</p>`);
+}
+function consentScreen(){
+ takeover(`<div class="row" style="margin:20px 0 4px;gap:12px"><div class="alinma-mark"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 18V8l8-5 8 5v10M4 18h16M9 18v-5h6v5" stroke="var(--alinma)" stroke-width="1.6"/></svg></div><div><b style="font:700 17px var(--disp)">موافقة الإنماء</b><div style="font-size:11.5px;color:var(--muted);margin-top:3px">Open Banking · AIS</div></div></div>
+  <p class="vs">يطلب <b>نيّر</b> إذنك لقراءة بياناتك من مصرف الإنماء. اختر بوضوح ما تسمح به:</p>
+  <div class="card">
+    <div class="consent-scope"><div class="ic">🏦</div><div class="grow"><b style="font:600 13px var(--disp)">قراءة الحسابات</b><div style="font-size:11.5px;color:var(--muted);margin-top:3px">أسماء وأرقام حساباتك (مخفية جزئيًا)</div></div><label class="tgl"><input type="checkbox" checked disabled><i></i></label></div>
+    <div class="consent-scope"><div class="ic">💰</div><div class="grow"><b style="font:600 13px var(--disp)">قراءة الأرصدة</b><div style="font-size:11.5px;color:var(--muted);margin-top:3px">رصيدك المتاح والحالي</div></div><label class="tgl"><input type="checkbox" checked disabled><i></i></label></div>
+    <div class="consent-scope"><div class="ic">📃</div><div class="grow"><b style="font:600 13px var(--disp)">قراءة العمليات</b><div style="font-size:11.5px;color:var(--muted);margin-top:3px">آخر 12 شهر — لاكتشاف الالتزامات والتوقع</div></div><label class="tgl"><input type="checkbox" checked disabled><i></i></label></div>
+  </div>
+  <div class="card safe" style="display:flex;gap:10px;align-items:flex-start"><div style="font-size:18px">🔒</div><div style="font-size:12px;color:var(--muted);line-height:1.9">نيّر <b style="color:var(--text)">لا يستطيع تحريك أي أموال</b> بهذه الموافقة. تحريك الأموال يحتاج صلاحية منفصلة وموافقة مستقلة لكل عملية.</div></div>
+  <div class="card"><div class="kv"><span>مدة الموافقة</span><b>90 يوم</b></div><div class="kv"><span>يمكنك الإلغاء</span><b style="color:var(--safe)">في أي وقت</b></div><div class="kv"><span>مزوّد الخدمة</span><b>نيّر (TPP مرخّص — افتراضي)</b></div></div>
+  <button class="btn" onclick="authoriseAndScan()">أوافق وأمنح الإذن</button>
+  <button class="btn ghost" style="margin-top:8px" onclick="startConnect()">رجوع</button>`);
+}
+async function authoriseAndScan(){
+ await OpenBankingAdapter.connect(['ReadAccountsBasic','ReadBalances','ReadTransactionsDetail']);
+ await OpenBankingAdapter.authorise();
+ scanScreen();
+}
+
+function scanScreen(){
+ takeover(`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center">
+   ${orbEl(110,true)}
+   <h2 style="font:700 22px var(--disp);margin-top:24px">نيّر يحلّل حسابك…</h2>
+   <p style="font-size:12.5px;color:var(--muted);margin-top:6px">قراءة وتصنيف عملياتك من مصرف الإنماء</p>
+   <div class="scanlog" id="scanlog" style="text-align:right;width:100%;max-width:320px;margin-top:22px"></div>
+ </div>`);
+ App.orb('scanning');
+ const steps=[
+  ['🔑 تأكيد الموافقة عبر Open Banking','ok'],
+  ['👁 قراءة 243 عملية (12 شهر)','ok'],
+  ['🏷 تصنيف العمليات إلى فئات…',''],
+  ['💵 اكتشاف الراتب: 14,500 ر.س يوم 27','hl'],
+  ['🟣 اكتشاف تمارا — قسط 1,200 ر.س','hl'],
+  ['🟢 اكتشاف تابي — قسط 600 ر.س','hl'],
+  ['🔵 اكتشاف مدفوع — قسط 600 ر.س','hl'],
+  ['🏦 اكتشاف قسط تمويل الإنماء — 1,850 ر.س','hl'],
+  ['🔁 اكتشاف 6 اشتراكات متكررة','hl'],
+  ['📈 بناء توقع التدفق النقدي 30 يوم…',''],
+  ['⚠️ رصد أيام خطر محتملة قبل الراتب','hl'],
+  ['🧮 حساب درجة الصحة المالية','ok'],
+ ];
+ const log=document.getElementById('scanlog');let i=0;
+ App.runPipeline();
+ const iv=setInterval(()=>{
+  if(i>=steps.length){clearInterval(iv);ActivityLogger.seed();setTimeout(scanDone,500);return;}
+  const [txt,cls]=steps[i++];
+  const d=document.createElement('div');d.className=cls;d.innerHTML=txt;log.appendChild(d);
+  log.parentElement.scrollTop=9999;
+ },360);
+}
+function scanDone(){
+ const sc=App.state.score;
+ takeover(`<div style="height:100%;display:flex;flex-direction:column;justify-content:center;min-height:80vh">
+   <div style="text-align:center">${orbEl(72,true)}<h2 style="font:700 23px var(--disp);margin-top:16px">اكتشف نيّر التزاماتك المخفية</h2></div>
+   <div class="grid2" style="margin-top:20px">
+     <div class="stat" style="text-align:center"><span>إجمالي الالتزامات الشهرية</span><b style="color:var(--light1)">${fmt(sc.oblig)} ${SAR}</b></div>
+     <div class="stat" style="text-align:center"><span>من راتبك</span><b style="color:${sc.ratio>30?'var(--risk)':'var(--text)'}">${sc.ratio}%</b></div>
+   </div>
+   <div class="card glow" style="text-align:center;margin-top:12px"><div style="font-size:12px;color:var(--muted)">كنت تظن التزاماتك أقل؟</div><b style="font:800 22px var(--disp);display:block;margin-top:6px">٤ خطط دفع + ٦ اشتراكات</b><div style="font-size:12px;color:var(--muted);margin-top:6px">≈ ثلث راتبك، موزّعة عبر تطبيقات لا تتحدث مع بعضها.</div></div>
+   <button class="btn" style="margin-top:16px" onclick="enterApp('home')">شوف لوحتك الكاملة</button>
+ </div>`);
+ App.orb('idle');
+}
+
+/* ================= Demo Mode (guided 12-step overlay for judges) ================= */
+const DemoMode={
+ active:false,step:0,
+ steps:[
+  {t:'المشكلة حقيقية',d:'عبدالله، 27، موظف بالرياض، يظن وضعه مرتاح. لكن التزاماته موزّعة عبر تمارا وتابي ومدفوع والبنك والاشتراكات — لا يراها مجتمعة.',go:()=>splash()},
+  {t:'الربط بمصرف الإنماء',d:'كل شيء يبدأ من Open Banking. الإنماء هو البنك الأساسي. اضغط "التالي" ليربط نيّر الحساب.',go:()=>startConnect()},
+  {t:'موافقة شفّافة',d:'نيّر يطلب قراءة الحسابات والأرصدة والعمليات فقط — لمدة 90 يوم. لا يقدر يحرّك أي ريال بهذه الموافقة.',go:()=>consentScreen()},
+  {t:'المسح الذكي',d:'يقرأ نيّر 243 عملية، يصنّفها، ويكتشف الالتزامات تلقائيًا أمام عينيك.',go:()=>authoriseAndScan()},
+  {t:'الالتزامات المخفية تظهر',d:'٤ خطط دفع + ٦ اشتراكات ≈ ثلث الراتب — في مكان واحد لأول مرة.',go:()=>enterApp('obligations')},
+  {t:'درجة الصحة المالية',d:'درجة 0–100 قابلة للشرح — كل عامل ووزنه وسببه واضح.',go:()=>{enterApp('home');setTimeout(()=>Views.scoreWhy(),400)}},
+  {t:'يوم الخطر القادم',d:'يتوقع نيّر الرصيد 30 يوم ويكشف أيام نقص السيولة قبل الراتب — مع السبب.',go:()=>{closeSheet();enterApp('forecast')}},
+  {t:'اسأل نيّر: أقدر أشتري جوال بتابي؟',d:'الوكيل يحوّل سؤالك إلى تحليل على بياناتك الحقيقية.',go:()=>{enterApp('agent');setTimeout(()=>Views.ask('أقدر أشتري جوال بتابي؟'),500)}},
+  {t:'المحاكاة: الدرجة تنزل والخطر يظهر',d:'الشراء يرفع الالتزام 800 ر.س، تنزل الدرجة، ويظهر يوم خطر جديد.',go:()=>{enterApp('simulator');setTimeout(()=>Views.runSim(),500)}},
+  {t:'بديل أأمن',d:'نيّر لا يكتفي بالتحذير — يقترح تأجيل الشراء أو خفض الصرف الأسبوعي.',go:()=>{enterApp('simulator');setTimeout(()=>Views.runSim(),300)}},
+  {t:'وافق على حماية الأقساط',d:'بموافقتك، يحجز نيّر مبالغ الأقساط ويقترح سقف صرف — فتختفي أيام الخطر.',go:()=>{const p=AgentDecisionEngine.nextRiskProposal();if(p&&!App.state.reserve)AgentDecisionEngine.execute(p);enterApp('home')}},
+  {t:'سجل النشاط + خلاصة القيمة',d:'كل خطوة مسجّلة بشفافية. نيّر ما يراقب فلوسك — يحميها، بإذنك.',go:()=>enterApp('log')},
+ ],
+ start(){this.active=true;this.step=0;this.show();},
+ show(){
+  const s=this.steps[this.step];
+  document.getElementById('demo-overlay').classList.add('open');
+  document.getElementById('demo-overlay').innerHTML=`<div class="panel">
+    <div class="row" style="margin-bottom:4px"><div class="steps" style="flex:1">خطوة ${this.step+1} من ${this.steps.length} · وضع العرض</div><button onclick="DemoMode.stop()" style="background:none;border:none;color:var(--faint);font-size:18px;cursor:pointer">✕</button></div>
+    <h4>${s.t}</h4><p>${s.d}</p>
+    <div style="display:flex;gap:3px;margin:12px 0">${this.steps.map((_,k)=>`<div style="flex:1;height:3px;border-radius:99px;background:${k<=this.step?'var(--light1)':'rgba(255,255,255,.12)'}"></div>`).join('')}</div>
+    <div class="btnrow" style="margin-top:4px">${this.step>0?`<button class="btn ghost sm" onclick="DemoMode.prev()">السابق</button>`:''}<button class="btn sm" onclick="DemoMode.next()">${this.step===this.steps.length-1?'إنهاء':'التالي ›'}</button></div>
+  </div>`;
+  try{s.go();}catch(e){}
+  setTimeout(()=>document.getElementById('demo-overlay').classList.add('open'),10);
+ },
+ next(){if(this.step<this.steps.length-1){this.step++;this.show();}else this.stop();},
+ prev(){if(this.step>0){this.step--;this.show();}},
+ stop(){this.active=false;document.getElementById('demo-overlay').classList.remove('open');if(!App.connected){App.state.reserve=0;}if(App.connected)enterApp('home');toast('انتهى العرض التوضيحي');}
+};
+
+/* ================= Boot ================= */
+document.getElementById('demo-fab').addEventListener('click',()=>DemoMode.start());
+window.go=go;window.Views=Views;window.App=App;window.AgentDecisionEngine=AgentDecisionEngine;
+window.PermissionManager=PermissionManager;window.ActivityLogger=ActivityLogger;window.DemoMode=DemoMode;
+window.getProp=getProp;window.why=why;window.openSheet=openSheet;window.closeSheet=closeSheet;
+window.startConnect=startConnect;window.consentScreen=consentScreen;window.authoriseAndScan=authoriseAndScan;
+window.onboard=onboard;window.ScenarioSimulator=ScenarioSimulator;window.CashflowForecaster=CashflowForecaster;window.HealthScoreEngine=HealthScoreEngine;
+splash();
+</script>
+</body>
+</html>
