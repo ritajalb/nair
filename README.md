@@ -2,6 +2,8 @@
 
 A clickable prototype of an AI financial agent built on open banking. Nair reads a user's bank transactions, uncovers hidden commitments, predicts days when money will run short, and protects upcoming payments, but only with the user's explicit consent.
 
+**Live demo:** https://ritajalb.github.io/nair/
+
 <p align="center">
   <img src="docs/splash.png" width="45%"/>
   <img src="docs/connect-bank.png" width="45%"/>
